@@ -1,5 +1,11 @@
 package com.exequiel.redditor.ui.activity;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -19,14 +26,43 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.reddit.RedditRestClient;
 
+import org.json.JSONException;
+
+import java.util.UUID;
+
+/**
+ * Based on https://github.com/pratik98/Reddit-OAuth for the login
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+    WebView web;
+    SharedPreferences pref;
+    Dialog auth_dialog;
+    String DEVICE_ID = UUID.randomUUID().toString();
+    String authCode;
+    boolean authComplete = false;
+    Intent resultIntent = new Intent();
+
+    private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
+    private static String CLIENT_SECRET ="";
+    private static String REDIRECT_URI=BuildConfig.REDIRECT_URI;
+    private static String GRANT_TYPE="https://oauth.reddit.com/grants/installed_client";
+    private static String GRANT_TYPE2="authorization_code";
+    private static String TOKEN_URL ="access_token";
+    private static String OAUTH_URL ="https://www.reddit.com/api/v1/authorize.compact";
+    private static String OAUTH_SCOPE="read";
+    private static String STATE = UUID.randomUUID().toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +70,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
+        final RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
+        try {
+            redditRestClient.getTokenFoInstalledClient();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -45,12 +85,71 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        pref = getSharedPreferences("AppPref", MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                auth_dialog = new Dialog(MainActivity.this);
+                auth_dialog.setContentView(R.layout.auth_dialog);
+                web = (WebView) auth_dialog.findViewById(R.id.webv);
+                web.getSettings().setJavaScriptEnabled(true);
+                String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state="+STATE+"&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
+                web.loadUrl(url);
+                Toast.makeText(getApplicationContext(), "" + url, Toast.LENGTH_LONG).show();
+
+                web.setWebViewClient(new WebViewClient() {
+                    @Override
+                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                        view.loadUrl(url);
+                        return true;
+                    }
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        super.onPageStarted(view, url, favicon);
+
+                    }
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+
+                        if (url.contains("?code=") || url.contains("&code=")) {
+                            Log.d("OnPageFinished", url.toString());
+                            Uri uri = Uri.parse(url);
+                            authCode = uri.getQueryParameter("code");
+                            Log.i("OnPageFinished", "CODE : " + authCode);
+                            authComplete = true;
+                            resultIntent.putExtra("code", authCode);
+                            MainActivity.this.setResult(Activity.RESULT_OK, resultIntent);
+                            setResult(Activity.RESULT_CANCELED, resultIntent);
+                            SharedPreferences.Editor edit = pref.edit();
+                            edit.putString("Code", authCode);
+                            edit.commit();
+                            auth_dialog.dismiss();
+                            Toast.makeText(getApplicationContext(), "Authorization Code is: " + pref.getString("Code", ""), Toast.LENGTH_SHORT).show();
+
+                            try {
+                                redditRestClient.getTokenForAuthCode();
+                                Toast.makeText(getApplicationContext(), "Auccess Token: " + pref.getString("token", ""), Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else if (url.contains("error=access_denied")) {
+                            Log.i("", "ACCESS_DENIED_HERE");
+                            resultIntent.putExtra("code", authCode);
+                            authComplete = true;
+                            setResult(Activity.RESULT_CANCELED, resultIntent);
+                            Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
+
+                            auth_dialog.dismiss();
+                        }
+                    }
+                });
+                auth_dialog.show();
+                auth_dialog.setTitle("Authorize");
+                auth_dialog.setCancelable(true);
+
             }
         });
 
