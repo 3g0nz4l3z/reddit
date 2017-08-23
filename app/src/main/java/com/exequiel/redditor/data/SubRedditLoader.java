@@ -1,8 +1,9 @@
 package com.exequiel.redditor.data;
 
 import android.content.Context;
-import android.content.CursorLoader;
 import android.net.Uri;
+import android.support.v4.content.CursorLoader;
+
 public class SubRedditLoader extends CursorLoader {
 
     public static SubRedditLoader allSubReddits(Context context){

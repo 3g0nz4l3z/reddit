@@ -2,6 +2,7 @@ package com.exequiel.redditor.reddit;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.exequiel.redditor.data.LinksLoader;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
  */
 
 public class RedditPersister {
+    private static SharedPreferences pref;
 
     private static final String TAG = RedditPersister.class.getCanonicalName();
 
@@ -43,6 +45,13 @@ public class RedditPersister {
             cv.put(RedditContract.SubReddits.OVER18, child.getString(RedditContract.SubReddits.OVER18));
             contentValues.add(cv);
 
+            if (i == 0){
+                pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
+                SharedPreferences.Editor edit = pref.edit();
+                edit.putString(RedditContract.SubReddits.SUBREDDIT_ID, child.getString(RedditContract.SubReddits.SUBREDDIT_ID));
+                edit.commit();
+
+            }
         }
         if (contentValues.size() > 0) {
             ContentValues[] contentValuesFixedArray = new ContentValues[contentValues.size()];

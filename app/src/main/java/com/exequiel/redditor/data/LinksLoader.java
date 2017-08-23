@@ -1,15 +1,43 @@
 package com.exequiel.redditor.data;
 
 import android.content.Context;
-import android.content.CursorLoader;
+import android.net.Uri;
+import android.support.v4.content.CursorLoader;
 
 /**
  * Created by m4ch1n3 on 19/8/2017.
  */
 
 public class LinksLoader extends CursorLoader {
-    private LinksLoader(Context context) {
-        super(context);
+
+    private LinksLoader(Context context, Uri uri) {
+        super(context, uri, Query.PROJECTION, null, null, null);
+    }
+
+    private LinksLoader(Context context, String selection) {
+        super(context, RedditContract.Links.CONTENT_URI, Query.PROJECTION, selection, null, null);
+
+    }
+
+    public static LinksLoader allLinks(Context context) {
+        return new LinksLoader(context, RedditContract.Links.buildDirUri());
+    }
+
+    public static LinksLoader fromSubRedditId(Context context, long linkId) {
+        return new LinksLoader(context, RedditContract.Links.buildUriWithRowId(linkId));
+    }
+
+    /**
+     * I have to fix this
+     *
+     * @param context
+     * @param order
+     * @param subRedditId
+     * @return
+     */
+    public static LinksLoader allLinksByOrderBySubReddit(Context context, String order, String subRedditId) {
+        String selection = RedditContract.Links.LINK_ORDER + " = " + order + " AND " + RedditContract.Links.LINK_SUBREDDIT_ID + " =" + subRedditId;
+        return new LinksLoader(context, selection);
     }
 
     public interface Query {
