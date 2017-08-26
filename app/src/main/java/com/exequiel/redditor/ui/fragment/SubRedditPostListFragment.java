@@ -4,58 +4,90 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
+import com.exequiel.redditor.interfaces.IProgresBarRefresher;
+import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 
-public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>  {
+public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher {
+    View rootView;
+    private static final String TAG = SubRedditPostListFragment.class.getCanonicalName();
     private static SharedPreferences pref;
+    private LinearLayout progressBaarContainer;
     SubredditPostCursorAdapter subredditPostCursorAdapter;
+    private RelativeLayout fSubReddit;
+    private LinearLayout progressBarContainer;
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+
+    public SubRedditPostListFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
+        if (rootView == null) {
+            Log.d(TAG, "onCreateViewNotNull");
+            rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
+            fSubReddit = (RelativeLayout) rootView.findViewById(R.id.fSubReddits);
+            progressBarContainer = (LinearLayout) fSubReddit.findViewById(R.id.progressBarContainer);
+            if (savedInstanceState==null){
+                Bundle subRedditsBundle = this.getArguments();
+                String subreddit = "popular";
+                String order = "hot";
+                if (subRedditsBundle != null) {
+                    subreddit = subRedditsBundle.getString(RedditContract.SubReddits.DISPLAY_NAME);
+                    order = subRedditsBundle.getString(RedditContract.SubReddits.SUBREDDIT_ORDER);
+                }
+                /**
+                 * Make a proper string value
+                 */
+                getActivity().setTitle("r/" + subreddit);
+                new RedditRestClient(getActivity()).retrieveLinks(SubRedditPostListFragment.this, subreddit, order);
+
+            } else{
+
+            }
+        }
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Context context = getActivity();
         /**
-         * The fragment argument representing the section number for this
-         * fragment.
+         * La consulta tiene ser del subreddit actual
          */
-        private static final String SUBREDDIT_ORDER = "subRedditOrder";
 
-        public SubRedditPostListFragment() {
-        }
+        Cursor c = context.getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, null, null, null);
+        ;
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static SubRedditPostListFragment newInstance(String subRedditOrder) {
-            SubRedditPostListFragment fragment = new SubRedditPostListFragment();
-            Bundle args = new Bundle();
-            args.putString(SUBREDDIT_ORDER, subRedditOrder);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(SUBREDDIT_ORDER)));
-            return rootView;
-        }
+        subredditPostCursorAdapter = new SubredditPostCursorAdapter(context, c);
+        setListAdapter(subredditPostCursorAdapter);
+        getLoaderManager().initLoader(0, null, this);
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String order = args.getString(SUBREDDIT_ORDER,"hot");
-        pref = getActivity().getSharedPreferences("AppPref", Context.MODE_PRIVATE);
-        String subRedditId = args.getString(RedditContract.SubReddits.SUBREDDIT_ID, pref.getString(RedditContract.SubReddits.SUBREDDIT_ID,""));
-        return LinksLoader.allLinksByOrderBySubReddit(getActivity(), order, subRedditId);
+
+        return LinksLoader.allLinks(getActivity());
     }
 
     @Override
@@ -69,4 +101,48 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
         subredditPostCursorAdapter.swapCursor(null);
 
     }
+
+    @Override
+    public void refresh() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "refresh()");
+                subredditPostCursorAdapter.notifyDataSetChanged();
+                progressBarContainer.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void start_progress_bar() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "start_progress_bar");
+                progressBarContainer.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    @Override
+    public void end_progress_bar() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "end_progress_bar");
+                progressBarContainer.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        if (rootView.getParent() != null) {
+            ((ViewGroup) rootView.getParent()).removeView(rootView);
+        }
+        super.onDestroy();
+    }
+
 }

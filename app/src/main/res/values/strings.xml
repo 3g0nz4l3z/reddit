@@ -9,4 +9,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="reddit_username">u/username</string>
     <string name="subredditname">r/some_subreddit</string>
+    <string name="link_title">Awasome mokeup</string>
+    <string name="subrredit_name_prefixed">r/test_subreddit</string>
+    <string name="link_points">10K</string>
+    <string name="link_coments">1020 comments</string>
+    <string name="link_time">12 hours ago</string>
 </resources>

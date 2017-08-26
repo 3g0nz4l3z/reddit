@@ -1,20 +1,17 @@
 package com.exequiel.redditor.reddit;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 import com.exequiel.redditor.data.RedditContract;
-import com.exequiel.redditor.receiver.AuthClientReceiver;
+import com.exequiel.redditor.interfaces.IOnAuthenticated;
+import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,40 +43,45 @@ public class RedditRestClient {
     private static String STATE = UUID.randomUUID().toString();
     private static String DEVICE_ID = STATE;
     private static String USER_AGENT = "Android/Redditor 0.1";
-    public  RedditRestClient(Context ctxt) {
-        context = ctxt;
+    private AsyncHttpClient client;
+
+    public RedditRestClient(Context mn) {
+
+        context = mn;
+        client = new AsyncHttpClient();
     }
 
 
 
-    private static AsyncHttpClient client = new AsyncHttpClient();
-
-    public static void get(boolean isOAuth, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        client.get(context, getAbsoluteUrl(isOAuth, url),headers, params, responseHandler);
+    public void get(boolean isOAuth, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+        client.get(context, getAbsoluteUrl(isOAuth, url), headers, params, responseHandler);
 
     }
-    public static void post(boolean isOAuth, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler) {
 
-        client.post(context, getAbsoluteUrl(isOAuth, url),headers, params, null, responseHandler);
+    public void post(boolean isOAuth, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+
+        client.post(context, getAbsoluteUrl(isOAuth, url), headers, params, null, responseHandler);
     }
 
-    private static String getAbsoluteUrl(boolean isOauth, String relativeUrl) {
-        if (isOauth){
-            return BASE_URL_OAUTH+relativeUrl;
+    private String getAbsoluteUrl(boolean isOauth, String relativeUrl) {
+        if (isOauth) {
+            return BASE_URL_OAUTH + relativeUrl;
         }
         return BASE_URL + relativeUrl;
     }
+
     /**
      * Rerieve the list of subrreddits by an order, should be called after getToken,
+     *
      * @param order
      */
-    public void retrieveSubreddits(final String order){
-        String url = "/subreddits/"+order;
+    public void retrieveSubreddits(final String order) {
+        String url = "/subreddits/" + order;
 
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-        headers[1] = new BasicHeader("Authorization", "bearer "+pref.getString("token",""));
-        get(true, url, headers,null, new JsonHttpResponseHandler(){
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -97,21 +99,30 @@ public class RedditRestClient {
 
     /**
      * Retrieve links for a subreddit in an order than can be controversial, hot, new, random, top
+     *
+     * @param progresBarRefresher
      * @param subReddit
      * @param order
      */
-    public void retrieveLinks(String subReddit, final String order){
+    public void retrieveLinks(final IProgresBarRefresher progresBarRefresher, String subReddit, final String order) {
         Log.d(TAG, "retrieveLinks");
-        String url = "/r/"+subReddit+"/"+order;
+        final String url = "/r/" + subReddit + "/" + order;
 
-        Header[] headers = new Header[2];
+        final Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-        headers[1] = new BasicHeader("Authorization", "bearer "+pref.getString("token",""));
-        get(true, url, headers,null, new JsonHttpResponseHandler(){
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                progresBarRefresher.start_progress_bar();
+            }
+
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-                    RedditPersister.persistLinks(context,order, response);
+                    Log.d(TAG, "retrieveLinks" + response);
+                    RedditPersister.persistLinks(context, order, response, progresBarRefresher);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -119,9 +130,12 @@ public class RedditRestClient {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveLinks" + errorResponse);
             }
         });
+
     }
+
 
     public void getTokenForAuthCode() throws JSONException {
         client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
@@ -132,7 +146,7 @@ public class RedditRestClient {
         requestParams.put("code", code);
         requestParams.put("grant_type", GRANT_TYPE2);
         requestParams.put("redirect_uri", REDIRECT_URI);
-        post(false, ACCES_TOKEN_URL,null, requestParams, new JsonHttpResponseHandler() {
+        post(false, ACCES_TOKEN_URL, null, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
@@ -161,19 +175,20 @@ public class RedditRestClient {
         });
     }
 
-    public void getTokenFoInstalledClient() throws JSONException {
+    public void getTokenFoInstalledClient(final IOnAuthenticated iOnAuthenticated) throws JSONException {
         client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
         pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
 
         RequestParams requestParams = new RequestParams();
         requestParams.put("grant_type", GRANT_TYPE);
         requestParams.put("device_id", DEVICE_ID);
-        post(false, ACCES_TOKEN_URL,null, requestParams, new JsonHttpResponseHandler() {
+        post(false, ACCES_TOKEN_URL, null, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 Log.d("getToken()", response.toString());
                 try {
+
                     token = response.getString("access_token").toString();
                     expires_in = response.getString("expires_in").toString();
                     SharedPreferences.Editor edit = pref.edit();
@@ -181,11 +196,10 @@ public class RedditRestClient {
                     edit.putString("expires_in", expires_in);
                     edit.commit();
                     Log.i("Access_token", pref.getString("token", ""));
+                    iOnAuthenticated.retrieveData();
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
-
-                context.sendBroadcast(new Intent(AuthClientReceiver.ACTION));
             }
 
             @Override
@@ -209,7 +223,7 @@ public class RedditRestClient {
         requestParams.put("token", access_token);
         requestParams.put("token_type_hint", "access_token");
 
-        post(false, "revoke_token",null, requestParams, new JsonHttpResponseHandler() {
+        post(false, "revoke_token", null, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
@@ -235,7 +249,7 @@ public class RedditRestClient {
 
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-        headers[1] = new BasicHeader("Authorization", "bearer "+pref.getString("token",""));
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
         String url = "/me";
         get(true, url, headers, null, new JsonHttpResponseHandler() {
 

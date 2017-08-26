@@ -63,7 +63,8 @@ public class RedditContract {
         String LINK_URL = "url";
         String LINK_CREATED = "created";
         String LINK_IS_VIDEO = "is_video";
-        String LINK_OVER18 = "over18";
+        String LINK_NUM_COMMENTS = "num_comments";
+//        String LINK_OVER18 = "over18";
     }
 
     public static class Links implements LinksColumns{

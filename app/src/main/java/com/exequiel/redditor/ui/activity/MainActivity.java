@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -25,8 +27,9 @@ import android.widget.Toast;
 
 import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
-import com.exequiel.redditor.ui.fragment.adapter.SubrreditOrderPagerAdapter;
+import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 
 import org.json.JSONException;
 
@@ -35,8 +38,8 @@ import java.util.UUID;
 /**
  * Based on https://github.com/pratik98/Reddit-OAuth for the login
  */
-public class MainActivity extends AppCompatActivity{
-    private SubrreditOrderPagerAdapter mSectionsPagerAdapter;
+public class MainActivity extends AppCompatActivity implements IOnAuthenticated {
+    private static final String TAG = MainActivity.class.getCanonicalName();
     private ViewPager mViewPager;
     WebView web;
     SharedPreferences pref;
@@ -44,16 +47,18 @@ public class MainActivity extends AppCompatActivity{
     String authCode;
     boolean authComplete = false;
     Intent resultIntent = new Intent();
-
+    FragmentManager fm;
+    FragmentTransaction ft;
     private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
-    private static String CLIENT_SECRET ="";
-    private static String REDIRECT_URI=BuildConfig.REDIRECT_URI;
-    private static String GRANT_TYPE="https://oauth.reddit.com/grants/installed_client";
-    private static String GRANT_TYPE2="authorization_code";
-    private static String TOKEN_URL ="access_token";
-    private static String OAUTH_URL ="https://www.reddit.com/api/v1/authorize.compact";
-    private static String OAUTH_SCOPE="read";
+    private static String CLIENT_SECRET = "";
+    private static String REDIRECT_URI = BuildConfig.REDIRECT_URI;
+    private static String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
+    private static String GRANT_TYPE2 = "authorization_code";
+    private static String TOKEN_URL = "access_token";
+    private static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
+    private static String OAUTH_SCOPE = "read";
     private static String STATE = UUID.randomUUID().toString();
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,18 +68,12 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         final RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
         try {
-            redditRestClient.getTokenFoInstalledClient();
+            redditRestClient.getTokenFoInstalledClient(MainActivity.this);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        mSectionsPagerAdapter = new SubrreditOrderPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
 
         pref = getSharedPreferences("AppPref", MODE_PRIVATE);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity{
                 auth_dialog.setContentView(R.layout.auth_dialog);
                 web = (WebView) auth_dialog.findViewById(R.id.webv);
                 web.getSettings().setJavaScriptEnabled(true);
-                String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state="+STATE+"&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
+                String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state=" + STATE + "&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
                 web.loadUrl(url);
                 Toast.makeText(getApplicationContext(), "" + url, Toast.LENGTH_LONG).show();
 
@@ -95,11 +94,13 @@ public class MainActivity extends AppCompatActivity{
                         view.loadUrl(url);
                         return true;
                     }
+
                     @Override
                     public void onPageStarted(WebView view, String url, Bitmap favicon) {
                         super.onPageStarted(view, url, favicon);
 
                     }
+
                     @Override
                     public void onPageFinished(WebView view, String url) {
                         super.onPageFinished(view, url);
@@ -184,7 +185,18 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    public void retrieveData() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+        new RedditRestClient(MainActivity.this).retrieveSubreddits("popular");
+                fm = getSupportFragmentManager();
+                ft = fm.beginTransaction();
+                ft.add(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
 
+            }
+        });
 
-
+    }
 }

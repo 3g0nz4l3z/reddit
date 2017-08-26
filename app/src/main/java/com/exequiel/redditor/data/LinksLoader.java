@@ -3,12 +3,15 @@ package com.exequiel.redditor.data;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.content.CursorLoader;
+import android.util.Log;
 
 /**
  * Created by m4ch1n3 on 19/8/2017.
  */
 
 public class LinksLoader extends CursorLoader {
+
+    private static final String TAG = LinksLoader.class.getCanonicalName();
 
     private LinksLoader(Context context, Uri uri) {
         super(context, uri, Query.PROJECTION, null, null, null);
@@ -35,8 +38,15 @@ public class LinksLoader extends CursorLoader {
      * @param subRedditId
      * @return
      */
-    public static LinksLoader allLinksByOrderBySubReddit(Context context, String order, String subRedditId) {
+    public static LinksLoader allLinksByOrderBySubRedditId(Context context, String order, String subRedditId) {
+        Log.d(TAG, subRedditId);
         String selection = RedditContract.Links.LINK_ORDER + " = " + order + " AND " + RedditContract.Links.LINK_SUBREDDIT_ID + " =" + subRedditId;
+        return new LinksLoader(context, selection);
+    }
+
+    public static LinksLoader allLinksByOrderBySubRedditName(Context context, String order, String subRedditName) {
+        Log.d(TAG, subRedditName);
+        String selection = RedditContract.Links.LINK_ORDER + " = " + order + " AND " + RedditContract.Links.LINK_SUBREDDIT + " =" + subRedditName;
         return new LinksLoader(context, selection);
     }
 
@@ -57,7 +67,8 @@ public class LinksLoader extends CursorLoader {
                 RedditContract.Links.LINK_URL,
                 RedditContract.Links.LINK_CREATED,
                 RedditContract.Links.LINK_IS_VIDEO,
-                RedditContract.Links.LINK_OVER18,
+                RedditContract.Links.LINK_NUM_COMMENTS,
+//                RedditContract.Links.LINK_OVER18,
         };
         int _ID = 0;
         int LINK_ORDER = 1;
@@ -74,6 +85,7 @@ public class LinksLoader extends CursorLoader {
         int LINK_URL = 12;
         int LINK_CREATED = 13;
         int LINK_IS_VIDEO = 14;
-        int LINK_OVER18 = 15;
+        int LINK_NUM_COMMENTS = 15;
+//        int LINK_OVER18 = 15;
     }
 }

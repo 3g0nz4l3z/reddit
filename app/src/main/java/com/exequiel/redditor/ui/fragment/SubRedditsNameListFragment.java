@@ -8,9 +8,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.RedditContract;
@@ -22,11 +24,18 @@ import com.exequiel.redditor.ui.fragment.adapter.SubRedditNameCursorAdapter;
  */
 
 public class SubRedditsNameListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = SubRedditsNameListFragment.class.getCanonicalName();
     SubRedditNameCursorAdapter subRedditNameCursorAdapter;
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view  = inflater.inflate(R.layout.fragment_subreddits_name_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_subreddits_name_list, container, false);
         return view;
     }
 
@@ -34,13 +43,33 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Context context = getActivity();
-        Cursor c = context.getContentResolver().query(RedditContract.SubReddits.CONTENT_URI, SubRedditLoader.Query.PROJECTION, null, null, null);
+        Cursor c = getActivity().getContentResolver().query(RedditContract.SubReddits.CONTENT_URI, SubRedditLoader.Query.PROJECTION, null, null, null);
         subRedditNameCursorAdapter = new SubRedditNameCursorAdapter(context, c);
         setListAdapter(subRedditNameCursorAdapter);
         getLoaderManager().initLoader(0, null, this);
 
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+
+        Log.i(TAG, "Item clicked: " + id);
+        String subRedditName = "trending";
+        String order = "hot";
+        Cursor c = getActivity().getContentResolver().query(RedditContract.SubReddits.CONTENT_URI, SubRedditLoader.Query.PROJECTION, "_id =" + id, null, null);
+        if (c.moveToFirst()) {
+            do {
+                subRedditName = c.getString(SubRedditLoader.Query.DISPLAY_NAME);
+            } while (c.moveToNext());
+        }
+        Log.d(TAG, "onListItemClick: " + subRedditName);
+        Bundle bundle = new Bundle();
+        bundle.putString(RedditContract.SubReddits.DISPLAY_NAME, subRedditName);
+        bundle.putString(RedditContract.SubReddits.SUBREDDIT_ORDER, order);
+        SubRedditPostListFragment subRedditPostListFragment = new SubRedditPostListFragment();
+        subRedditPostListFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -55,6 +84,6 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         subRedditNameCursorAdapter.swapCursor(null);
-
     }
+
 }

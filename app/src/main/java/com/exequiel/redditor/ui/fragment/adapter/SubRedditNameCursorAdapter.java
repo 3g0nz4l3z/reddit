@@ -29,7 +29,6 @@ public class SubRedditNameCursorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
         View view = LayoutInflater.from(context).inflate(R.layout.subreddit_name_item, viewGroup, false);
-        //bindView(view, context, cursor);
         return view;
     }
 

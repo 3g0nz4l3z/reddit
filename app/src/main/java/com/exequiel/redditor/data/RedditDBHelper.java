@@ -47,7 +47,9 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Links.LINK_PERMALINK + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_URL + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_CREATED + " TEXT NOT NULL, "
-                + RedditContract.Links.LINK_IS_VIDEO + " TEXT NOT NULL"
+                + RedditContract.Links.LINK_IS_VIDEO + " TEXT NOT NULL,"
+                + RedditContract.Links.LINK_NUM_COMMENTS + " TEXT NOT NULL"
+//                + RedditContract.Links.LINK_OVER18 + " TEXT NOT NULL"
                 + ");";
         db.execSQL(CREATE_TABLE_SUBREDDITS);
         db.execSQL(CREATE_TABLE_LINKS);
