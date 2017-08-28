@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.exequiel.redditor.R;
@@ -143,6 +145,24 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             ((ViewGroup) rootView.getParent()).removeView(rootView);
         }
         super.onDestroy();
+
     }
 
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        PostFragment fragment = new PostFragment();
+        Bundle bundle = new Bundle();
+        String linkId = "";
+        Cursor c = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, "_id =" + id, null, null);
+        if (c.moveToFirst()) {
+            do {
+                linkId = c.getString(LinksLoader.Query.LINK_ID);
+            } while (c.moveToNext());
+        }
+
+        bundle.putString(RedditContract.Links.LINK_ID, linkId);
+        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, fragment).commit();
+    }
 }

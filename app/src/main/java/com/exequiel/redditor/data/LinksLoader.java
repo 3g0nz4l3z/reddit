@@ -26,7 +26,7 @@ public class LinksLoader extends CursorLoader {
         return new LinksLoader(context, RedditContract.Links.buildDirUri());
     }
 
-    public static LinksLoader fromSubRedditId(Context context, long linkId) {
+    public static LinksLoader fromLinkId(Context context, long linkId) {
         return new LinksLoader(context, RedditContract.Links.buildUriWithRowId(linkId));
     }
 

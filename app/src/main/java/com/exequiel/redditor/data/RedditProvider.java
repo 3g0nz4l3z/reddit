@@ -28,6 +28,8 @@ public class RedditProvider extends ContentProvider{
     static final int SUBREDDIT_WITH_ID = 101;
     static final int LINK = 200;
     static final int LINK_WITH_ID = 201;
+    static final int COMMENT = 300;
+    static final int COMMENT_WITH_ID = 301;
 
 
 
@@ -38,6 +40,8 @@ public class RedditProvider extends ContentProvider{
         matcher.addURI(authority, RedditContract.PATH_SUBREDDITS + "/#", SUBREDDIT); //out from 'insert'
         matcher.addURI(authority, RedditContract.PATH_LINKS, LINK); //out from 'insert'
         matcher.addURI(authority, RedditContract.PATH_LINKS + "/#", LINK_WITH_ID); //out from 'insert'
+        matcher.addURI(authority, RedditContract.PATH_COMMENTS, COMMENT); //out from 'insert'
+        matcher.addURI(authority, RedditContract.PATH_COMMENTS + "/#", COMMENT_WITH_ID); //out from 'insert'
         return matcher;
     }
 
@@ -72,6 +76,10 @@ public class RedditProvider extends ContentProvider{
                 return Links.CONTENT_TYPE;
             case LINK_WITH_ID:
                 return Links.CONTENT_ITEM_TYPE;
+            case COMMENT:
+                return Comments.CONTENT_TYPE;
+            case COMMENT_WITH_ID:
+                return Comments.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -88,6 +96,11 @@ public class RedditProvider extends ContentProvider{
                 return RedditContract.SubReddits.buildUriWithRowId(_id);
             }
             case LINK: {
+                final long _id = db.insertOrThrow(Tables.LINKS, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return RedditContract.Links.buildUriWithRowId(_id);
+            }
+            case COMMENT: {
                 final long _id = db.insertOrThrow(Tables.LINKS, null, values);
                 getContext().getContentResolver().notifyChange(uri, null);
                 return RedditContract.Links.buildUriWithRowId(_id);
@@ -117,6 +130,7 @@ public class RedditProvider extends ContentProvider{
     interface Tables{
         String SUBREDDITS = "subreddits";
         String LINKS = "links";
+        String COMMENTS = "comments";
     }
 
     private SelectionBuilder buildSelection(Uri uri) {
@@ -139,6 +153,13 @@ public class RedditProvider extends ContentProvider{
                 return builder.table(Tables.LINKS);
             }
             case LINK_WITH_ID: {
+                final String _id = paths.get(1);
+                return builder.table(Tables.LINKS).where(RedditContract.Links._ID + "=?", _id);
+            }
+            case COMMENT: {
+                return builder.table(Tables.LINKS);
+            }
+            case COMMENT_WITH_ID: {
                 final String _id = paths.get(1);
                 return builder.table(Tables.LINKS).where(RedditContract.Links._ID + "=?", _id);
             }

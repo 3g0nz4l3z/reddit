@@ -14,4 +14,7 @@
     <string name="link_points">10K</string>
     <string name="link_coments">1020 comments</string>
     <string name="link_time">12 hours ago</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

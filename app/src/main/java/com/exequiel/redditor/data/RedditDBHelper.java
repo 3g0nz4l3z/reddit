@@ -51,8 +51,21 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Links.LINK_NUM_COMMENTS + " TEXT NOT NULL"
 //                + RedditContract.Links.LINK_OVER18 + " TEXT NOT NULL"
                 + ");";
+        String CREATE_TABLE_COMMENTS = "CREATE TABLE " + Tables.COMMENTS + " ( "
+                +RedditContract.Comments._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + RedditContract.Comments.COMMENTS_ID + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_LINK_ID + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_SUBREDDIT_ID + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_AUTHOR + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_BODY + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_SCORE + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_CREATED + " TEXT NOT NULL, "
+                + ");";
+
+
         db.execSQL(CREATE_TABLE_SUBREDDITS);
         db.execSQL(CREATE_TABLE_LINKS);
+        db.execSQL(CREATE_TABLE_COMMENTS);
     }
 
     @Override
