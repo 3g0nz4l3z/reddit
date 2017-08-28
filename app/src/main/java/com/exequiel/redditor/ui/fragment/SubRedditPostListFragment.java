@@ -27,8 +27,6 @@ import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher {
     View rootView;
     private static final String TAG = SubRedditPostListFragment.class.getCanonicalName();
-    private static SharedPreferences pref;
-    private LinearLayout progressBaarContainer;
     SubredditPostCursorAdapter subredditPostCursorAdapter;
     private RelativeLayout fSubReddit;
     private LinearLayout progressBarContainer;
