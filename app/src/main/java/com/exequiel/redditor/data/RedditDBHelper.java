@@ -59,7 +59,7 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Comments.COMMENTS_AUTHOR + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_BODY + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_SCORE + " TEXT NOT NULL, "
-                + RedditContract.Comments.COMMENTS_CREATED + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_CREATED + " TEXT NOT NULL "
                 + ");";
 
 
