@@ -24,6 +24,7 @@ import com.exequiel.redditor.ui.fragment.adapter.SubRedditNameCursorAdapter;
  */
 
 public class SubRedditsNameListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    View rootView;
     private static final String TAG = SubRedditsNameListFragment.class.getCanonicalName();
     SubRedditNameCursorAdapter subRedditNameCursorAdapter;
 
@@ -35,8 +36,10 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_subreddits_name_list, container, false);
-        return view;
+        if (rootView == null) {
+            View rootView = inflater.inflate(R.layout.fragment_subreddits_name_list, container, false);
+        }
+        return rootView;
     }
 
     @Override
@@ -86,4 +89,11 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         subRedditNameCursorAdapter.swapCursor(null);
     }
 
+    public void onDestroy() {
+        if (rootView.getParent() != null) {
+            ((ViewGroup) rootView.getParent()).removeView(rootView);
+        }
+        super.onDestroy();
+
+    }
 }

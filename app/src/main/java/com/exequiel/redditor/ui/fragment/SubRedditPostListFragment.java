@@ -40,8 +40,13 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (rootView == null) {
             Log.d(TAG, "onCreateViewNotNull");
             rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
@@ -153,14 +158,17 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
         PostFragment fragment = new PostFragment();
         Bundle bundle = new Bundle();
         String linkId = "";
+        String linkSubreddit = "";
         Cursor c = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, "_id =" + id, null, null);
         if (c.moveToFirst()) {
             do {
                 linkId = c.getString(LinksLoader.Query.LINK_ID);
+                linkSubreddit  = c.getString(LinksLoader.Query.LINK_SUBREDDIT);
             } while (c.moveToNext());
         }
 
         bundle.putString(RedditContract.Links.LINK_ID, linkId);
+        bundle.putString(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, fragment).commit();
     }
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
+import com.exequiel.redditor.ui.fragment.PostFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -275,4 +276,30 @@ public class RedditRestClient {
         });
     }
 
+    public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
+        Log.d(TAG, "retrieveLinks");
+        final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
+
+        final Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                progresBarRefresher.start_progress_bar();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, "retrieveLinks" + response);
+                RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveLinks" + errorResponse);
+            }
+        });
+    }
 }

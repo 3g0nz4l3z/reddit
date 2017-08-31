@@ -24,8 +24,21 @@ public class CommentsLoader extends CursorLoader{
 
     public interface Query {
         String[] PROJECTION = {
-                RedditContract.Links._ID,
+                RedditContract.Comments._ID,
+                RedditContract.Comments.COMMENTS_ID,
+                RedditContract.Comments.COMMENTS_LINK_ID,
+                RedditContract.Comments.COMMENTS_AUTHOR,
+                RedditContract.Comments.COMMENTS_SUBREDDIT_ID,
+                RedditContract.Comments.COMMENTS_SCORE,
+                RedditContract.Comments.COMMENTS_BODY,
+                RedditContract.Comments.COMMENTS_CREATED,
         };
         int _ID = 0;
+        int COMMENTS_ID = 1;
+        int COMMENTS_LINK_ID = 2;
+        int COMMENTS_AUTHOR = 3;
+        int COMMENTS_SUBREDDIT_ID = 4;
+        int COMMENTS_SCORE = 5;
+        int COMMENTS_CREATED = 6;
     }
 }

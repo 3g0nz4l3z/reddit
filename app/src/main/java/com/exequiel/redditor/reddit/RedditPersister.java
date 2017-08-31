@@ -104,4 +104,8 @@ public class RedditPersister {
             progresBarRefresher.refresh();
         }
     }
+
+    public static void persistComments(Context context, String linkId, JSONObject response, IProgresBarRefresher progresBarRefresher) {
+        //Make a recirsive method to retreave the comments :)
+    }
 }
