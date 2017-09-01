@@ -105,7 +105,7 @@ public class RedditPersister {
         }
     }
 
-    public static void persistComments(Context context, String linkId, JSONObject response, IProgresBarRefresher progresBarRefresher) {
-        //Make a recirsive method to retreave the comments :)
+    public static void persistComments(Context context, String linkId, JSONArray response, IProgresBarRefresher progresBarRefresher) throws JSONException {
+        //Make a recursive method to retrieve the comments :)
     }
 }

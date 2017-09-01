@@ -26,6 +26,7 @@ public class CommentsLoader extends CursorLoader{
         String[] PROJECTION = {
                 RedditContract.Comments._ID,
                 RedditContract.Comments.COMMENTS_ID,
+                RedditContract.Comments.COMMENTS_PARENT_ID,
                 RedditContract.Comments.COMMENTS_LINK_ID,
                 RedditContract.Comments.COMMENTS_AUTHOR,
                 RedditContract.Comments.COMMENTS_SUBREDDIT_ID,
@@ -35,10 +36,11 @@ public class CommentsLoader extends CursorLoader{
         };
         int _ID = 0;
         int COMMENTS_ID = 1;
-        int COMMENTS_LINK_ID = 2;
-        int COMMENTS_AUTHOR = 3;
-        int COMMENTS_SUBREDDIT_ID = 4;
-        int COMMENTS_SCORE = 5;
-        int COMMENTS_CREATED = 6;
+        int COMMENTS_PARENT_ID = 1;
+        int COMMENTS_LINK_ID = 3;
+        int COMMENTS_AUTHOR = 4;
+        int COMMENTS_SUBREDDIT_ID = 5;
+        int COMMENTS_SCORE = 6;
+        int COMMENTS_CREATED = 7;
     }
 }

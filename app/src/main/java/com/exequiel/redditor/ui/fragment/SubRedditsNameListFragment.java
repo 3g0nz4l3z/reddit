@@ -88,9 +88,6 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
     }
 
     public void onDestroy() {
-        if (rootView.getParent() != null) {
-            ((ViewGroup) rootView.getParent()).removeView(rootView);
-        }
         super.onDestroy();
 
     }

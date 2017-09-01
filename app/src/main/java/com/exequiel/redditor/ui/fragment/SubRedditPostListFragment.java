@@ -165,6 +165,7 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
 
         bundle.putString(RedditContract.Links.LINK_ID, linkId);
         bundle.putString(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
+        fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, fragment).commit();
     }
 }

@@ -13,6 +13,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,7 +26,7 @@ import cz.msebera.android.httpclient.message.BasicHeader;
  * Based on https://loopj.com/android-async-http/ and https://github.com/pratik98/Reddit-OAuth
  */
 public class RedditRestClient {
-    private static final String TAG = RedditContract.class.getCanonicalName();
+    private static final String TAG = RedditRestClient.class.getCanonicalName();
     private static SharedPreferences pref;
     private static String token;
     private static String refresh_token;
@@ -276,30 +277,59 @@ public class RedditRestClient {
         });
     }
 
-    public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
-        Log.d(TAG, "retrieveLinks");
-        final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
+//    public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
+//        Log.d(TAG, "retrieveComments");
+//        final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
+//
+//        final Header[] headers = new Header[2];
+//        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+//        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+//        get(true, url, headers, null, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onStart() {
+//                progresBarRefresher.start_progress_bar();
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                Log.d(TAG, "retrieveComments" + response);
+//
+//                RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                Log.d(TAG, "retrieveComments" + errorResponse);
+//            }
+//        });
+//    }
+public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
+    final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
 
-        final Header[] headers = new Header[2];
-        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
-        Log.d(TAG, "token" + pref.getString("token", ""));
-        get(true, url, headers, null, new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                progresBarRefresher.start_progress_bar();
-            }
+    Header[] headers = new Header[2];
+    headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+    headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+    Log.d(TAG, url);
+    get(true, url, headers, null, new JsonHttpResponseHandler() {
+        @Override
+        public void onStart() {
+            progresBarRefresher.start_progress_bar();
+        }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d(TAG, "retrieveLinks" + response);
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            Log.d(TAG, "onSuccess");
+            try {
                 RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+        }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d(TAG, "retrieveLinks" + errorResponse);
-            }
-        });
-    }
+        @Override
+        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            Log.d(TAG, "retrieveComments "+errorResponse);
+        }
+    });
+}
 }

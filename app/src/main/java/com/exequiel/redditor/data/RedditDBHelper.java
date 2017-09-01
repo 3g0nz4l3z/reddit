@@ -54,6 +54,7 @@ public class RedditDBHelper extends SQLiteOpenHelper {
         String CREATE_TABLE_COMMENTS = "CREATE TABLE " + Tables.COMMENTS + " ( "
                 +RedditContract.Comments._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + RedditContract.Comments.COMMENTS_ID + " TEXT NOT NULL, "
+                + RedditContract.Comments.COMMENTS_PARENT_ID + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_LINK_ID + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_SUBREDDIT_ID + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_AUTHOR + " TEXT NOT NULL, "

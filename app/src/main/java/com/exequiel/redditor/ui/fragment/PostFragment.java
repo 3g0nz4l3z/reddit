@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,8 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
                 String linkSubreddit;
                 if (bundle != null){
                     linkId = bundle.getString(RedditContract.Links.LINK_ID);
-                    linkSubreddit = bundle.getString(RedditContract.Links.LINK_ID);
+                    linkSubreddit = bundle.getString(RedditContract.Links.LINK_SUBREDDIT);
+                    Log.d(TAG, linkId+" "+linkSubreddit);
                     new RedditRestClient(getActivity()).retrieveComments(PostFragment.this, linkSubreddit, linkId);
                 }
             }

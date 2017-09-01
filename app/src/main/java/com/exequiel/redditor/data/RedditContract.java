@@ -98,6 +98,7 @@ public class RedditContract {
     interface CommentsColumns{
         String _ID = "_id";
         String COMMENTS_ID = "id";
+        String COMMENTS_PARENT_ID = "comments_parent_id";
         String COMMENTS_SUBREDDIT_ID="subreddit_id";
         String COMMENTS_LINK_ID="link_id";
         String COMMENTS_AUTHOR="author";
