@@ -36,9 +36,7 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (rootView == null) {
             View rootView = inflater.inflate(R.layout.fragment_subreddits_name_list, container, false);
-        }
         return rootView;
     }
 

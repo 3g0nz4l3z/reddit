@@ -39,14 +39,10 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     public SubRedditPostListFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
         if (rootView == null) {
             Log.d(TAG, "onCreateViewNotNull");
             rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
