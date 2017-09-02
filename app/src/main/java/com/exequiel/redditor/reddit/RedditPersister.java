@@ -36,7 +36,7 @@ public class RedditPersister {
 
 
             ContentValues cv = new ContentValues();
-            String subredditId =  child.getString(RedditContract.SubReddits.SUBREDDIT_ID);
+            String subredditId = child.getString(RedditContract.SubReddits.SUBREDDIT_ID);
             String subredditName = child.getString(RedditContract.SubReddits.DISPLAY_NAME);
             cv.put(RedditContract.SubReddits.SUBREDDIT_ID, subredditId);
             cv.put(RedditContract.SubReddits.SUBREDDIT_ORDER, order);
@@ -47,10 +47,10 @@ public class RedditPersister {
             cv.put(RedditContract.SubReddits.OVER18, child.getString(RedditContract.SubReddits.OVER18));
             contentValues.add(cv);
 
-            if (i == 0){
+            if (i == 0) {
                 pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
                 SharedPreferences.Editor edit = pref.edit();
-                edit.putString(RedditContract.SubReddits.SUBREDDIT_ID,subredditId);
+                edit.putString(RedditContract.SubReddits.SUBREDDIT_ID, subredditId);
                 edit.putString(RedditContract.SubReddits.DISPLAY_NAME, subredditName);
                 edit.commit();
 
@@ -97,7 +97,7 @@ public class RedditPersister {
             ContentValues[] contentValuesFixedArray = new ContentValues[contentValues.size()];
             contentValues.toArray(contentValuesFixedArray);
             //context.getContentResolver().delete(RedditContract.Links.CONTENT_URI,null, null);
-            context.getContentResolver().delete(RedditContract.Links.CONTENT_URI, RedditContract.Links.LINK_ORDER+" = \""+order+"\"", null);
+            context.getContentResolver().delete(RedditContract.Links.CONTENT_URI, RedditContract.Links.LINK_ORDER + " = \"" + order + "\"", null);
 
             context.getContentResolver().bulkInsert(RedditContract.Links.CONTENT_URI, contentValuesFixedArray);
 
@@ -105,7 +105,65 @@ public class RedditPersister {
         }
     }
 
+    /**
+     *
+     * @param context
+     * @param linkId
+     * @param response
+     * @param progresBarRefresher
+     * @throws JSONException
+     */
     public static void persistComments(Context context, String linkId, JSONArray response, IProgresBarRefresher progresBarRefresher) throws JSONException {
         //Make a recursive method to retrieve the comments :)
+        JSONObject comments = response.getJSONObject(1);
+        JSONArray children = comments.getJSONObject("data").getJSONArray("children");
+        context.getContentResolver().delete(RedditContract.Comments.CONTENT_URI, null, null);
+        persistCommentsInternal(context, children, "");
+        progresBarRefresher.refresh();
+    }
+
+    /**
+     *
+     * @param context
+     * @param children
+     * @param parentId
+     * @throws JSONException
+     */
+    private static void persistCommentsInternal(Context context, JSONArray children, String parentId) throws JSONException {
+        ArrayList<ContentValues> contentValues = new ArrayList<ContentValues>();
+        for (int i = 0; i < children.length(); i++) {
+            JSONObject child = children.getJSONObject(i).getJSONObject("data");
+            ContentValues cv = new ContentValues();
+            cv.put(RedditContract.Comments.COMMENTS_PARENT_ID, parentId);
+            cv.put(RedditContract.Comments.COMMENTS_ID,  child.getString(RedditContract.Comments.COMMENTS_ID));
+            cv.put(RedditContract.Comments.COMMENTS_LINK_ID,  child.getString(RedditContract.Comments.COMMENTS_LINK_ID));
+            cv.put(RedditContract.Comments.COMMENTS_AUTHOR,  child.getString(RedditContract.Comments.COMMENTS_AUTHOR));
+            cv.put(RedditContract.Comments.COMMENTS_SUBREDDIT_ID,  child.getString(RedditContract.Comments.COMMENTS_SUBREDDIT_ID));
+            cv.put(RedditContract.Comments.COMMENTS_SCORE,  child.getString(RedditContract.Comments.COMMENTS_SCORE));
+            cv.put(RedditContract.Comments.COMMENTS_BODY, child.getString( RedditContract.Comments.COMMENTS_BODY));
+            cv.put(RedditContract.Comments.COMMENTS_CREATED,  child.getString(RedditContract.Comments.COMMENTS_CREATED));
+            contentValues.add(cv);
+            if (child.has("replies")){
+                Log.d(TAG, "replies");
+                try {
+                    JSONObject replies = child.getJSONObject("replies");
+                    JSONArray childrenReplies  = replies.getJSONObject("data").getJSONArray("children");
+                    persistCommentsInternal(context, childrenReplies, child.getString(RedditContract.Comments.COMMENTS_ID));
+
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Log.d(TAG, "persistCommentsInternal por persistir");
+        if (contentValues.size() > 0) {
+            Log.d(TAG, "persistCommentsInternal a persistir");
+            ContentValues[] contentValuesFixedArray = new ContentValues[contentValues.size()];
+            contentValues.toArray(contentValuesFixedArray);
+            //context.getContentResolver().delete(RedditContract.Links.CONTENT_URI,null, null);
+
+            context.getContentResolver().bulkInsert(RedditContract.Comments.CONTENT_URI, contentValuesFixedArray);
+        }
+        return;
     }
 }

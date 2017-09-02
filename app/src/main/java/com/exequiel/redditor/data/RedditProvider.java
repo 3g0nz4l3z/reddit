@@ -12,16 +12,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.exequiel.redditor.data.RedditContract.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class RedditProvider extends ContentProvider{
+public class RedditProvider extends ContentProvider {
     private SQLiteOpenHelper mOpenHelper;
     private static final UriMatcher sUriMatcher = buildUriMatcher();
-
 
 
     static final int SUBREDDIT = 100;
@@ -32,6 +32,11 @@ public class RedditProvider extends ContentProvider{
     static final int COMMENT_WITH_ID = 301;
 
 
+    interface Tables {
+        String SUBREDDITS = "subreddits";
+        String LINKS = "links";
+        String COMMENTS = "comments";
+    }
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -101,9 +106,9 @@ public class RedditProvider extends ContentProvider{
                 return RedditContract.Links.buildUriWithRowId(_id);
             }
             case COMMENT: {
-                final long _id = db.insertOrThrow(Tables.LINKS, null, values);
+                final long _id = db.insertOrThrow(Tables.COMMENTS, null, values);
                 getContext().getContentResolver().notifyChange(uri, null);
-                return RedditContract.Links.buildUriWithRowId(_id);
+                return RedditContract.Comments.buildUriWithRowId(_id);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -125,12 +130,6 @@ public class RedditProvider extends ContentProvider{
         final SelectionBuilder builder = buildSelection(uri);
         getContext().getContentResolver().notifyChange(uri, null);
         return builder.where(selection, selectionArgs).update(db, values);
-    }
-
-    interface Tables{
-        String SUBREDDITS = "subreddits";
-        String LINKS = "links";
-        String COMMENTS = "comments";
     }
 
     private SelectionBuilder buildSelection(Uri uri) {
@@ -157,11 +156,11 @@ public class RedditProvider extends ContentProvider{
                 return builder.table(Tables.LINKS).where(RedditContract.Links._ID + "=?", _id);
             }
             case COMMENT: {
-                return builder.table(Tables.LINKS);
+                return builder.table(Tables.COMMENTS);
             }
             case COMMENT_WITH_ID: {
                 final String _id = paths.get(1);
-                return builder.table(Tables.LINKS).where(RedditContract.Links._ID + "=?", _id);
+                return builder.table(Tables.COMMENTS).where(RedditContract.Comments._ID + "=?", _id);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

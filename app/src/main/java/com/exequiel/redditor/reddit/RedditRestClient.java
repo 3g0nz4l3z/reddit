@@ -277,32 +277,6 @@ public class RedditRestClient {
         });
     }
 
-//    public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
-//        Log.d(TAG, "retrieveComments");
-//        final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
-//
-//        final Header[] headers = new Header[2];
-//        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-//        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
-//        get(true, url, headers, null, new JsonHttpResponseHandler() {
-//            @Override
-//            public void onStart() {
-//                progresBarRefresher.start_progress_bar();
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                Log.d(TAG, "retrieveComments" + response);
-//
-//                RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                Log.d(TAG, "retrieveComments" + errorResponse);
-//            }
-//        });
-//    }
 public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
     final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
 

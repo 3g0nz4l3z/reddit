@@ -88,8 +88,8 @@ public class RedditContract {
         }
 
 
-        public static long getLinkUri(Uri subRedditUri) {
-            return Long.parseLong(subRedditUri.getPathSegments().get(1));
+        public static long getLinkUri(Uri linksUri) {
+            return Long.parseLong(linksUri.getPathSegments().get(1));
         }
 
     }
@@ -111,9 +111,9 @@ public class RedditContract {
         public static final Uri CONTENT_URI =
                 BASE_URI.buildUpon().appendPath(PATH_COMMENTS).build();
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SUBREDDITS;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_COMMENTS;
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SUBREDDITS;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_COMMENTS;
 
 
         /** Matches: /subreddits/ */
@@ -127,8 +127,8 @@ public class RedditContract {
         }
 
 
-        public static long getCommentUri(Uri subRedditUri) {
-            return Long.parseLong(subRedditUri.getPathSegments().get(1));
+        public static long getCommentUri(Uri commentsUri) {
+            return Long.parseLong(commentsUri.getPathSegments().get(1));
         }
 
     }
