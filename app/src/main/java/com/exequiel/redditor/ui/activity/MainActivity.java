@@ -35,14 +35,21 @@ import org.json.JSONException;
 
 import java.util.UUID;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Based on https://github.com/pratik98/Reddit-OAuth for the login
  */
 public class MainActivity extends AppCompatActivity implements IOnAuthenticated {
     private static final String TAG = MainActivity.class.getCanonicalName();
-    private ViewPager mViewPager;
-    WebView web;
     SharedPreferences pref;
+    @BindView(R.id.webv)
+    WebView web;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     Dialog auth_dialog;
     String authCode;
     boolean authComplete = false;
@@ -64,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         final RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
         try {
@@ -74,15 +81,12 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         }
 
 
-
         pref = getSharedPreferences("AppPref", MODE_PRIVATE);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 auth_dialog = new Dialog(MainActivity.this);
                 auth_dialog.setContentView(R.layout.auth_dialog);
-                web = (WebView) auth_dialog.findViewById(R.id.webv);
                 web.getSettings().setJavaScriptEnabled(true);
                 String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state=" + STATE + "&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
                 web.loadUrl(url);
@@ -190,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-        new RedditRestClient(MainActivity.this).retrieveSubreddits("popular");
+                new RedditRestClient(MainActivity.this).retrieveSubreddits("popular");
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
                 ft.add(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
