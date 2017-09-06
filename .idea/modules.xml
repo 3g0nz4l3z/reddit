@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Redditor.iml" filepath="$PROJECT_DIR$/Redditor.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/redditor.iml" filepath="$PROJECT_DIR$/redditor.iml" />
     </modules>
   </component>
 </project>
