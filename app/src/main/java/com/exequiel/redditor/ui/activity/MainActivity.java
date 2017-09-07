@@ -44,8 +44,6 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements IOnAuthenticated {
     private static final String TAG = MainActivity.class.getCanonicalName();
     SharedPreferences pref;
-    @BindView(R.id.webv)
-    WebView web;
     @BindView(R.id.fab)
     FloatingActionButton fab;
     @BindView(R.id.toolbar)
@@ -71,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
         final RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
         try {
             redditRestClient.getTokenFoInstalledClient(MainActivity.this);
@@ -87,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
             public void onClick(View view) {
                 auth_dialog = new Dialog(MainActivity.this);
                 auth_dialog.setContentView(R.layout.auth_dialog);
+                WebView web = (WebView) auth_dialog.findViewById(R.id.webv);
                 web.getSettings().setJavaScriptEnabled(true);
                 String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state=" + STATE + "&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
                 web.loadUrl(url);

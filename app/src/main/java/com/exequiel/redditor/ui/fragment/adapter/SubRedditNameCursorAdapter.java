@@ -34,12 +34,9 @@ public class SubRedditNameCursorAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
         ViewHolder viewHolder;
         View view = LayoutInflater.from(context).inflate(R.layout.subreddit_name_item, viewGroup, false);
-        if (view != null) {
-            viewHolder = (ViewHolder) view.getTag();
-        } else {
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        }
+
+        viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
         return view;
     }
 
