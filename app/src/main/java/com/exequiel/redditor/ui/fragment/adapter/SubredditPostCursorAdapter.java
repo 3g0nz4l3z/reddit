@@ -14,7 +14,6 @@ import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.LinksLoader;
 import com.squareup.picasso.Picasso;
 
-import org.w3c.dom.Text;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +22,7 @@ import butterknife.ButterKnife;
  * Created by egonzalez on 8/23/17.
  */
 
-public class SubredditPostCursorAdapter extends CursorAdapter{
+public class SubredditPostCursorAdapter extends CursorAdapter {
 
     private String TAG = SubredditPostCursorAdapter.class.getCanonicalName();
 
@@ -36,8 +35,11 @@ public class SubredditPostCursorAdapter extends CursorAdapter{
         ViewHolder viewHolder;
 
         View view = LayoutInflater.from(context).inflate(R.layout.subrredit_link_post_list_item, viewGroup, false);
+
+
         viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
+
         return view;
     }
 
@@ -56,11 +58,12 @@ public class SubredditPostCursorAdapter extends CursorAdapter{
         viewHolder.textViewSubrredit.setText(stextViewSubrredit);
         viewHolder.textViewTime.setText(stextViewTime);
         viewHolder.textViewLinkComments.setText(stextViewLinkComments);
-        if (!simageViewIconPreview.isEmpty()){
+        if (!simageViewIconPreview.isEmpty()) {
             Log.d(TAG, simageViewIconPreview);
             Picasso.with(context).load(simageViewIconPreview).into(viewHolder.imageViewIconPreview);
         }
     }
+
 
     public static class ViewHolder {
         @BindView(R.id.textViewSubrredit)
