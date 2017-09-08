@@ -105,14 +105,19 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
 
     @Override
     public void refresh() {
-        getActivity().runOnUiThread(new Runnable() {
+        try {
+
+            getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "refresh()");
-                subredditPostCursorAdapter.notifyDataSetChanged();
-                progressBarContainer.setVisibility(View.GONE);
+                    subredditPostCursorAdapter.notifyDataSetChanged();
+                    progressBarContainer.setVisibility(View.GONE);
             }
         });
+        }catch(Exception e){
+
+        }
     }
 
     @Override
@@ -158,14 +163,16 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
         Cursor c = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, "_id =" + id, null, null);
         if (c.moveToFirst()) {
             do {
-                linkId = c.getString(LinksLoader.Query.LINK_ID);
+                linkId = c.getString(LinksLoader.Query._ID);
                 linkSubreddit  = c.getString(LinksLoader.Query.LINK_SUBREDDIT);
             } while (c.moveToNext());
         }
 
-        bundle.putString(RedditContract.Links.LINK_ID, linkId);
+        bundle.putString(RedditContract.Links._ID, linkId);
         bundle.putString(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
         fragment.setArguments(bundle);
-        getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, fragment).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainActivityFrameLayaout, fragment).commit();
     }
+
+
 }

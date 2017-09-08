@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                 new RedditRestClient(MainActivity.this).retrieveSubreddits("popular");
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
-                ft.add(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
+                ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
 
             }
         });
