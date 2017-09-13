@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.data.CommentsLoader;
 import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
@@ -23,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class PostFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher {
+public class PostFragment extends Fragment implements IProgresBarRefresher {
     View rootView;
     @BindView(R.id.textViewSubrredit)
     TextView textViewSubrredit;
@@ -39,9 +41,11 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
     LinearLayout link_body;
     @BindView(R.id.link_image_layaout)
     LinearLayout link_image;
+    @BindView(R.id.ListViewComments)
+    ExpandableListView expandableListViewComments;
 
     private static final String TAG = PostFragment.class.getCanonicalName();
-    CommentsCursorAdapter commentsSimpleAdapter;
+    CommentsCursorAdapter commentsAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,46 +62,36 @@ public class PostFragment extends Fragment implements LoaderManager.LoaderCallba
             ButterKnife.bind(this, rootView);
             String linkId = "";
             String linkSubreddit = "";
+            String linkLinkId = "";
             if (savedInstanceState == null) {
                 Bundle bundle = this.getArguments();
                 if (bundle != null) {
                     linkId = bundle.getString(RedditContract.Links._ID);
                     linkSubreddit = bundle.getString(RedditContract.Links.LINK_SUBREDDIT);
+                    linkLinkId = bundle.getString(RedditContract.Links.LINK_ID);;
                     Log.d(TAG, linkId + " " + linkSubreddit);
-                    new RedditRestClient(getActivity()).retrieveComments(PostFragment.this, linkSubreddit, linkId);
+                    new RedditRestClient(getActivity()).retrieveComments(PostFragment.this, linkSubreddit, linkLinkId);
                 }
             }
-            Cursor c = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, RedditContract.Links._ID + " = " + linkId, null, null);
-            if (c.moveToFirst()) {
+            Log.d(TAG, linkLinkId);
+            Cursor cLink = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, RedditContract.Links._ID + " = \"" + linkId+"\"", null, null);
+            if (cLink.moveToFirst()) {
                 do {
                     Log.d(TAG, "PostFragment");
-                    textViewSubrredit.setText(c.getString(LinksLoader.Query.LINK_SUBREDDIT_NAME_PREFIXED));
-                    textViewDomain.setText(c.getString(LinksLoader.Query.LINK_DOMAIN));
-                    textViewLinkTitle.setText(c.getString(LinksLoader.Query.LINK_TITLE));
-                    textViewLinkPoints.setText(c.getString(LinksLoader.Query.LINK_SCORE));
-                    textViewLinkComments.setText(c.getString(LinksLoader.Query.LINK_NUM_COMMENTS));
-                } while (c.moveToNext());
+                    textViewSubrredit.setText(cLink.getString(LinksLoader.Query.LINK_SUBREDDIT_NAME_PREFIXED));
+                    textViewDomain.setText(cLink.getString(LinksLoader.Query.LINK_DOMAIN));
+                    textViewLinkTitle.setText(cLink.getString(LinksLoader.Query.LINK_TITLE));
+                    textViewLinkPoints.setText(cLink.getString(LinksLoader.Query.LINK_SCORE));
+                    textViewLinkComments.setText(cLink.getString(LinksLoader.Query.LINK_NUM_COMMENTS));
+                } while (cLink.moveToNext());
             }
         }
 
 
+        Cursor cComments = getActivity().getContentResolver().query(RedditContract.Comments.CONTENT_URI, CommentsLoader.Query.PROJECTION, null, null, null);
+        commentsAdapter = new CommentsCursorAdapter(cComments, getContext());
+        expandableListViewComments.setAdapter(commentsAdapter);
         return rootView;
-    }
-
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     @Override

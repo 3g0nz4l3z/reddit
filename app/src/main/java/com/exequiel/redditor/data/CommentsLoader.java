@@ -41,6 +41,7 @@ public class CommentsLoader extends CursorLoader{
         int COMMENTS_AUTHOR = 4;
         int COMMENTS_SUBREDDIT_ID = 5;
         int COMMENTS_SCORE = 6;
-        int COMMENTS_CREATED = 7;
+        int COMMENTS_BODY = 7;
+        int COMMENTS_CREATED = 8;
     }
 }

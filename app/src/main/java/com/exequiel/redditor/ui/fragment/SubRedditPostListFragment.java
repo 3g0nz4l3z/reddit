@@ -1,6 +1,7 @@
 package com.exequiel.redditor.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.exequiel.redditor.reddit.RedditRestClient;
+import com.exequiel.redditor.ui.activity.PostActivity;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 
 public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher {
@@ -78,7 +80,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
          */
 
         Cursor c = context.getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, null, null, null);
-        ;
 
         subredditPostCursorAdapter = new SubredditPostCursorAdapter(context, c);
         setListAdapter(subredditPostCursorAdapter);
@@ -156,22 +157,28 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        PostFragment fragment = new PostFragment();
-        Bundle bundle = new Bundle();
+
         String linkId = "";
+        String linkLinkId = "";
         String linkSubreddit = "";
         Cursor c = getActivity().getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, "_id =" + id, null, null);
         if (c.moveToFirst()) {
             do {
                 linkId = c.getString(LinksLoader.Query._ID);
+                linkLinkId = c.getString(LinksLoader.Query.LINK_ID);
                 linkSubreddit  = c.getString(LinksLoader.Query.LINK_SUBREDDIT);
             } while (c.moveToNext());
         }
 
-        bundle.putString(RedditContract.Links._ID, linkId);
-        bundle.putString(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
-        fragment.setArguments(bundle);
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.MainActivityFrameLayaout, fragment).commit();
+       ;
+        Intent intent = new Intent(getActivity(), PostActivity.class);
+        intent.putExtra(RedditContract.Links._ID, linkId);
+        intent.putExtra(RedditContract.Links.LINK_ID, linkLinkId);
+        intent.putExtra(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
+
+        getActivity().startActivity(intent);
+
+
     }
 
 
