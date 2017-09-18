@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.exequiel.redditor.BuildConfig;
@@ -32,6 +33,7 @@ import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.util.UUID;
 
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
     FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.textViewLinksTitle)
+    TextView textViewTitle;
     Dialog auth_dialog;
     String authCode;
     boolean authComplete = false;
@@ -193,11 +197,10 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new RedditRestClient(MainActivity.this).retrieveSubreddits("popular");
+                new RedditRestClient(MainActivity.this).retrieveSubreddits(getResources().getString(R.string.default_reddit_name));
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
                 ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
-
             }
         });
 

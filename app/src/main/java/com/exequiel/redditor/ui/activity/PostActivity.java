@@ -6,10 +6,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 
 import com.exequiel.redditor.R;
-import com.exequiel.redditor.data.RedditContract;
-import com.exequiel.redditor.ui.fragment.PostFragment;
 
 public class PostActivity extends AppCompatActivity {
 
@@ -19,20 +18,7 @@ public class PostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-//        PostFragment fragment = new PostFragment();
-//        Bundle bundle = new Bundle();
-//        String linkId = savedInstanceState.getString(RedditContract.Links._ID);
-//        String linkLinkId = savedInstanceState.getString(RedditContract.Links.LINK_ID);
-//        String linkSubreddit = savedInstanceState.getString(RedditContract.Links.LINK_SUBREDDIT);
-//
-//        bundle.putString(RedditContract.Links._ID, linkId);
-//        bundle.putString(RedditContract.Links.LINK_ID, linkLinkId);
-//        bundle.putString(RedditContract.Links.LINK_SUBREDDIT, linkSubreddit);
-//        fragment.setArguments(bundle);
-//        PostActivity.this.getSupportFragmentManager().beginTransaction().replace(R.id.MainActivityFrameLayaout, fragment).commit();
-
+        // getSupportActionBar().setDisplayShowTitleEnabled(false);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {

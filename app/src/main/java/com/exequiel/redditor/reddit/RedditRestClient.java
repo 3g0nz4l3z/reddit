@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
-import com.exequiel.redditor.ui.fragment.PostFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;

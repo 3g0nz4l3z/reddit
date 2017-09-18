@@ -13,8 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.ui.fragment.adapter.SubRedditNameCursorAdapter;
@@ -57,10 +59,13 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         Log.i(TAG, "Item clicked: " + id);
         String subRedditName = "trending";
         String order = "hot";
+        String displayNamePrefixed = "r/popular";
         Cursor c = getActivity().getContentResolver().query(RedditContract.SubReddits.CONTENT_URI, SubRedditLoader.Query.PROJECTION, "_id =" + id, null, null);
         if (c.moveToFirst()) {
             do {
                 subRedditName = c.getString(SubRedditLoader.Query.DISPLAY_NAME);
+                displayNamePrefixed = c.getString(SubRedditLoader.Query.DISPLAY_NAME_PREFIXED);
+
             } while (c.moveToNext());
         }
         Log.d(TAG, "onListItemClick: " + subRedditName);
@@ -70,6 +75,8 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         SubRedditPostListFragment subRedditPostListFragment = new SubRedditPostListFragment();
         subRedditPostListFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
+        TextView linksTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
+        linksTitle.setText(displayNamePrefixed);
     }
 
     @Override
