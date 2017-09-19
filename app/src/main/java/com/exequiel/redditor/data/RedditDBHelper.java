@@ -48,7 +48,8 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Links.LINK_URL + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_CREATED + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_IS_VIDEO + " TEXT NOT NULL,"
-                + RedditContract.Links.LINK_NUM_COMMENTS + " TEXT NOT NULL"
+                + RedditContract.Links.LINK_NUM_COMMENTS + " TEXT NOT NULL,"
+                + RedditContract.Links.LINK_IMAGE + " TEXT"
 //                + RedditContract.Links.LINK_OVER18 + " TEXT NOT NULL"
                 + ");";
         String CREATE_TABLE_COMMENTS = "CREATE TABLE " + Tables.COMMENTS + " ( "

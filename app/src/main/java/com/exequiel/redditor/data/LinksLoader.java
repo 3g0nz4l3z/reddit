@@ -68,6 +68,7 @@ public class LinksLoader extends CursorLoader {
                 RedditContract.Links.LINK_CREATED,
                 RedditContract.Links.LINK_IS_VIDEO,
                 RedditContract.Links.LINK_NUM_COMMENTS,
+                RedditContract.Links.LINK_IMAGE,
 //                RedditContract.Links.LINK_OVER18,
         };
         int _ID = 0;
@@ -86,6 +87,7 @@ public class LinksLoader extends CursorLoader {
         int LINK_CREATED = 13;
         int LINK_IS_VIDEO = 14;
         int LINK_NUM_COMMENTS = 15;
+        int LINK_IMAGE = 16;
 //        int LINK_OVER18 = 15;
     }
 }

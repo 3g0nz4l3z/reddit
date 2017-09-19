@@ -50,7 +50,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/link_title"
-                    android:textColor="@color/colorTextBlack"
                     android:textSize="@dimen/card_text_title" />
             </LinearLayout>
 
@@ -83,12 +82,6 @@
                     android:gravity="right"
                     android:text="@string/link_points" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/link_body_layaout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"></LinearLayout>
 
         </LinearLayout>
 

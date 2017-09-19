@@ -89,6 +89,16 @@ public class RedditPersister {
             cv.put(RedditContract.Links.LINK_CREATED, child.getString(RedditContract.Links.LINK_CREATED));
             cv.put(RedditContract.Links.LINK_IS_VIDEO, child.getString(RedditContract.Links.LINK_IS_VIDEO));
             cv.put(RedditContract.Links.LINK_NUM_COMMENTS, child.getString(RedditContract.Links.LINK_NUM_COMMENTS));
+            try {
+                JSONArray jAImages = child.getJSONObject("preview").getJSONArray("images");
+                JSONObject jOImage = jAImages.getJSONObject(0).getJSONObject("source");
+                String image = jOImage.getString("url");
+                Log.d(TAG, "image "+image);
+                cv.put(RedditContract.Links.LINK_IMAGE, image);
+
+            }catch (Exception e){
+
+            }
 //            cv.put(RedditContract.Links.LINK_OVER18, child.getString(RedditContract.Links.LINK_OVER18));
             contentValues.add(cv);
 
