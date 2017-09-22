@@ -58,10 +58,14 @@ public class SubredditPostCursorAdapter extends CursorAdapter {
         viewHolder.textViewSubrredit.setText(stextViewSubrredit);
         viewHolder.textViewTime.setText(stextViewTime);
         viewHolder.textViewLinkComments.setText(stextViewLinkComments);
+        try {
 
-        if (!simageViewIconPreview.isEmpty() || !simageViewIconPreview.equals("self")) {
-            Log.d(TAG, simageViewIconPreview);
-            Picasso.with(context).load(simageViewIconPreview).into(viewHolder.imageViewIconPreview);
+            if (!simageViewIconPreview.isEmpty() || !simageViewIconPreview.equals("self")) {
+                Log.d(TAG, simageViewIconPreview);
+                Picasso.with(context).load(simageViewIconPreview).into(viewHolder.imageViewIconPreview);
+            }
+        }catch(Exception e){
+
         }
     }
 
