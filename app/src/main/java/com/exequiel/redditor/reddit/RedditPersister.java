@@ -3,6 +3,8 @@ package com.exequiel.redditor.reddit;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.exequiel.redditor.data.RedditContract;
@@ -62,7 +64,6 @@ public class RedditPersister {
             context.getContentResolver().delete(RedditContract.SubReddits.CONTENT_URI, null, null);
             context.getContentResolver().bulkInsert(RedditContract.SubReddits.CONTENT_URI, contentValuesFixedArray);
         }
-
     }
 
     public static void persistLinks(Context context, String order, JSONObject response, IProgresBarRefresher progresBarRefresher) throws JSONException {

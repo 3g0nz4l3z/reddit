@@ -1,9 +1,12 @@
 package com.exequiel.redditor.ui.activity;
 
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -122,7 +125,7 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                 Log.d(TAG, "refresh()");
                 Log.d(TAG, sLinkId);
                 cComments = PostActivity.this.getContentResolver().query(RedditContract.Comments.CONTENT_URI, CommentsLoader.Query.PROJECTION, RedditContract.Comments.COMMENTS_LINK_ID + " like \"%" + sLinkId + "\"", null, null);
-                addCommentsView(cComments, linearLayaoutComments);
+                addCommentsView(cComments, linearLayaoutComments, false);
                 // add comments here in a form
                 progressBarContainer.setVisibility(View.GONE);
             }
@@ -152,13 +155,15 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
         });
     }
 
-    private void addCommentsView(Cursor cursor, LinearLayout linearLayaoutComments) {
-        Log.d(TAG, "addCommentsView"+cursor.getCount());
+    private void addCommentsView(Cursor cursor, LinearLayout linearLayaoutComments, boolean bChangeColor) {
         try {
             if (cursor.moveToFirst()) {
                 do {
 
                     View viewComment = LayoutInflater.from(PostActivity.this).inflate(R.layout.comment_item, null);
+//                    int backColor = getColorBackground(viewComment);
+
+                  //  if (viewComment.getBackground())
                     LinearLayout childComment = (LinearLayout) viewComment.findViewById(R.id.lineaLayOutChildComment);
                     TextView textViewUserName = (TextView) viewComment.findViewById(R.id.textViewUserName);
                     TextView textViewCommentScore = (TextView) viewComment.findViewById(R.id.textViewCommentScore);
@@ -172,15 +177,28 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                     textViewUserName.setText(sUserName);
                     textViewCommentScore.setText(sCommentScore);
                     textViewBody.setText(sBody);
-                    Log.d(TAG, "addCommentsView"+parentId);
                     Cursor internalCursor = PostActivity.this.getContentResolver().query(RedditContract.Comments.CONTENT_URI, CommentsLoader.Query.PROJECTION, RedditContract.Comments.COMMENTS_PARENT_ID + " =\"" + parentId + "\"", null, null);
                     linearLayaoutComments.addView(viewComment);
-                    addCommentsView(internalCursor, childComment);
+                    if (bChangeColor){
+                        addCommentsView(internalCursor, childComment, false);
+                        viewComment.setBackgroundResource(R.color.colorPrimaryLight);
+                    }else{
+                        addCommentsView(internalCursor, childComment, true);
+                        viewComment.setBackgroundResource(R.color.colorWhite);
+                    }
                 } while (cursor.moveToNext());
             }
 
         }catch(Exception e){
 
         }
+    }
+
+    private int getColorBackground(View view){
+        int backgroundColor = 0;
+        Drawable background = view.getBackground();
+        if (background instanceof ColorDrawable)
+            backgroundColor = ((ColorDrawable) background).getColor();
+        return backgroundColor;
     }
 }

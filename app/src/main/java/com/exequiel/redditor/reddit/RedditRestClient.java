@@ -97,6 +97,7 @@ public class RedditRestClient {
         });
     }
 
+
     /**
      * Retrieve links for a subreddit in an order than can be controversial, hot, new, random, top
      *
@@ -159,6 +160,7 @@ public class RedditRestClient {
                     edit.putString("expires_in", expires_in);
                     edit.commit();
                     Log.i("Access_token", pref.getString("token", ""));
+                    retrieveSubreddits("/mine/subscriber");
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
