@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.exequiel.redditor.R;
 import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.loopj.android.http.AsyncHttpClient;
@@ -77,10 +78,11 @@ public class RedditRestClient {
      */
     public void retrieveSubreddits(final String order) {
         String url = "/subreddits/" + order;
-
+        Log.d(TAG, url);
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
         headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG,  "retrieveSubreddits token "+headers[1]);
         get(true, url, headers, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -93,6 +95,7 @@ public class RedditRestClient {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveSubreddits" + errorResponse);
             }
         });
     }
@@ -138,12 +141,13 @@ public class RedditRestClient {
     }
 
 
-    public void getTokenForAuthCode() throws JSONException {
+    public void getTokenForAuthCode(final IOnAuthenticated iOnAuthenticated) throws JSONException {
         client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
         pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
         String code = pref.getString("Code", "");
 
         RequestParams requestParams = new RequestParams();
+        Log.d(TAG, "code "+code);
         requestParams.put("code", code);
         requestParams.put("grant_type", GRANT_TYPE2);
         requestParams.put("redirect_uri", REDIRECT_URI);
@@ -159,12 +163,11 @@ public class RedditRestClient {
                     edit.putString("token", token);
                     edit.putString("expires_in", expires_in);
                     edit.commit();
-                    Log.i("Access_token", pref.getString("token", ""));
-                    retrieveSubreddits("/mine/subscriber");
+                    Log.i(TAG, "getTokenForAuthCode "+pref.getString("token", ""));
+                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_user_subreddits));
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
-
             }
 
             @Override
@@ -197,8 +200,8 @@ public class RedditRestClient {
                     edit.putString("token", token);
                     edit.putString("expires_in", expires_in);
                     edit.commit();
-                    Log.i("Access_token", pref.getString("token", ""));
-                    iOnAuthenticated.retrieveData();
+                    Log.i(TAG, "getTokenFoInstalledClient "+pref.getString("token", ""));
+                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name));
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
@@ -246,8 +249,6 @@ public class RedditRestClient {
 
     public void getUsername() {
         Log.i("token", pref.getString("token", ""));
-        //  client.addHeader("Authorization", "bearer " + pref.getString("token", ""));
-        // client.addHeader("User-Agent", "Redditsavedoffline/0.1 by pratik");
 
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);

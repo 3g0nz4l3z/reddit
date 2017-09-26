@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                             Toast.makeText(getApplicationContext(), "Authorization Code is: " + pref.getString("Code", ""), Toast.LENGTH_SHORT).show();
 
                             try {
-                                redditRestClient.getTokenForAuthCode();
+                                redditRestClient.getTokenForAuthCode(MainActivity.this);
                                 Toast.makeText(getApplicationContext(), "Auccess Token: " + pref.getString("token", ""), Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -193,11 +193,11 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
 
 
     @Override
-    public void retrieveData() {
+    public void retrieveData(final String type) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new RedditRestClient(MainActivity.this).retrieveSubreddits(getResources().getString(R.string.default_reddit_name));
+                new RedditRestClient(MainActivity.this).retrieveSubreddits(type);
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
                 ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();

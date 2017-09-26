@@ -111,4 +111,5 @@
     </string>
     <string name="default_reddit">r/popular</string>
     <string name="default_reddit_name">popular</string>
+    <string name="default_user_subreddits">mine/subscriber</string>
 </resources>
