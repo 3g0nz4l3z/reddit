@@ -11,7 +11,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -24,16 +23,15 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
+import com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment;
 
 import org.json.JSONException;
-import org.w3c.dom.Text;
 
 import java.util.UUID;
 
@@ -59,13 +57,9 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
     FragmentManager fm;
     FragmentTransaction ft;
     private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
-    private static String CLIENT_SECRET = "";
     private static String REDIRECT_URI = BuildConfig.REDIRECT_URI;
-    private static String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
-    private static String GRANT_TYPE2 = "authorization_code";
-    private static String TOKEN_URL = "access_token";
     private static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
-    private static String OAUTH_SCOPE = "read";
+    private static String OAUTH_SCOPE = "read  mysubreddits";
     private static String STATE = UUID.randomUUID().toString();
     private TabLayout tabLayout;
 
@@ -93,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                 web.getSettings().setJavaScriptEnabled(true);
                 String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state=" + STATE + "&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
                 web.loadUrl(url);
-                Toast.makeText(getApplicationContext(), "" + url, Toast.LENGTH_LONG).show();
+
 
                 web.setWebViewClient(new WebViewClient() {
                     @Override
@@ -125,11 +119,9 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                             edit.putString("Code", authCode);
                             edit.commit();
                             auth_dialog.dismiss();
-                            Toast.makeText(getApplicationContext(), "Authorization Code is: " + pref.getString("Code", ""), Toast.LENGTH_SHORT).show();
 
                             try {
                                 redditRestClient.getTokenForAuthCode(MainActivity.this);
-                                Toast.makeText(getApplicationContext(), "Auccess Token: " + pref.getString("token", ""), Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -139,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                             resultIntent.putExtra("code", authCode);
                             authComplete = true;
                             setResult(Activity.RESULT_CANCELED, resultIntent);
-                            Toast.makeText(getApplicationContext(), "Error Occured", Toast.LENGTH_SHORT).show();
 
                             auth_dialog.dismiss();
                         }
@@ -193,14 +184,25 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
 
 
     @Override
-    public void retrieveData(final String type) {
+    public void retrieveData(final String type, final boolean isUser) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                new RedditRestClient(MainActivity.this).retrieveSubreddits(type);
+                RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
+                if (isUser){
+                    redditRestClient.retrieveMySubReddits(type);
+                    redditRestClient.getUsername();
+                }else{
+                    Log.d(TAG, "retrieveSubreddits");
+                    redditRestClient.retrieveSubreddits(type);
+                }
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
                 ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
+                       // .replace(R.id.SubRedditsNameListFragment, new SubRedditsNameListFragment()).commit();
+                ft = fm.beginTransaction();
+
+                ft.replace(R.id.SubRedditsNameListFragment, new SubRedditsNameListFragment()).commit();
             }
         });
 

@@ -11,6 +11,7 @@ public class RedditContract {
     public static final String PATH_LINKS = "links";
     public static final String PATH_COMMENTS = "comments";
 
+
     interface SubRedditsColumns{
         String _ID = "_id";
         String SUBREDDIT_ORDER = "_order";

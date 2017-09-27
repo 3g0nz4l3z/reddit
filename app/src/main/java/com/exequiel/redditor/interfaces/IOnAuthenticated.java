@@ -6,5 +6,5 @@ package com.exequiel.redditor.interfaces;
 
 public interface IOnAuthenticated {
 
-    void retrieveData(String type);
+    void retrieveData(String type, boolean isUser);
 }

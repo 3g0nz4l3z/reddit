@@ -26,9 +26,8 @@
             <include layout="@layout/nav_header_main"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
-            <fragment
+            <FrameLayout
                 android:id="@+id/SubRedditsNameListFragment"
-                android:name="com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
         </LinearLayout>

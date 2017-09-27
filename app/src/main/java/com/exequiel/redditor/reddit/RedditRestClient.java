@@ -65,10 +65,14 @@ public class RedditRestClient {
     }
 
     private String getAbsoluteUrl(boolean isOauth, String relativeUrl) {
+        String absUrl = "";
         if (isOauth) {
-            return BASE_URL_OAUTH + relativeUrl;
+            absUrl = BASE_URL_OAUTH + relativeUrl;
+        }else{
+            absUrl = BASE_URL + relativeUrl;
         }
-        return BASE_URL + relativeUrl;
+        Log.d(TAG, "the url "+absUrl);
+        return  absUrl;
     }
 
     /**
@@ -100,6 +104,30 @@ public class RedditRestClient {
         });
     }
 
+
+    public void retrieveMySubReddits(final String order) {
+        String url = "/subreddits/mine/subscriber";
+        Log.d(TAG, url);
+        Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG,  "retrieveSubreddits token "+headers[1]);
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    RedditPersister.persistSubReddits(context, order, response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveSubreddits error" + errorResponse);
+            }
+        });
+    }
 
     /**
      * Retrieve links for a subreddit in an order than can be controversial, hot, new, random, top
@@ -164,7 +192,7 @@ public class RedditRestClient {
                     edit.putString("expires_in", expires_in);
                     edit.commit();
                     Log.i(TAG, "getTokenForAuthCode "+pref.getString("token", ""));
-                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_user_subreddits));
+                   iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name), true);
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
@@ -201,7 +229,7 @@ public class RedditRestClient {
                     edit.putString("expires_in", expires_in);
                     edit.commit();
                     Log.i(TAG, "getTokenFoInstalledClient "+pref.getString("token", ""));
-                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name));
+                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name), false);
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
