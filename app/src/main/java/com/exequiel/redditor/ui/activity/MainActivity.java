@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -26,6 +28,8 @@ import android.widget.TextView;
 
 import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.data.RedditContract;
+import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
@@ -43,25 +47,23 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity implements IOnAuthenticated {
     private static final String TAG = MainActivity.class.getCanonicalName();
-    SharedPreferences pref;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.textViewLinksTitle)
     TextView textViewTitle;
-    Dialog auth_dialog;
     String authCode;
     boolean authComplete = false;
-    Intent resultIntent = new Intent();
     FragmentManager fm;
+    RedditRestClient redditRestClient;
     FragmentTransaction ft;
     private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
     private static String REDIRECT_URI = BuildConfig.REDIRECT_URI;
-    private static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
+
     private static String OAUTH_SCOPE = "read  mysubreddits";
     private static String STATE = UUID.randomUUID().toString();
     private TabLayout tabLayout;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         setContentView(R.layout.activity_main);
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
-        final RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
+        redditRestClient = new RedditRestClient(MainActivity.this);
         try {
             redditRestClient.getTokenFoInstalledClient(MainActivity.this);
         } catch (JSONException e) {
@@ -77,71 +79,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         }
 
 
-        pref = getSharedPreferences("AppPref", MODE_PRIVATE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth_dialog = new Dialog(MainActivity.this);
-                auth_dialog.setContentView(R.layout.auth_dialog);
-                WebView web = (WebView) auth_dialog.findViewById(R.id.webv);
-                web.getSettings().setJavaScriptEnabled(true);
-                String url = OAUTH_URL + "?client_id=" + CLIENT_ID + "&response_type=code&state=" + STATE + "&redirect_uri=" + REDIRECT_URI + "&scope=" + OAUTH_SCOPE;
-                web.loadUrl(url);
 
-
-                web.setWebViewClient(new WebViewClient() {
-                    @Override
-                    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                        view.loadUrl(url);
-                        return true;
-                    }
-
-                    @Override
-                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                        super.onPageStarted(view, url, favicon);
-
-                    }
-
-                    @Override
-                    public void onPageFinished(WebView view, String url) {
-                        super.onPageFinished(view, url);
-
-                        if (url.contains("?code=") || url.contains("&code=")) {
-                            Log.d("OnPageFinished", url.toString());
-                            Uri uri = Uri.parse(url);
-                            authCode = uri.getQueryParameter("code");
-                            Log.i("OnPageFinished", "CODE : " + authCode);
-                            authComplete = true;
-                            resultIntent.putExtra("code", authCode);
-                            MainActivity.this.setResult(Activity.RESULT_OK, resultIntent);
-                            setResult(Activity.RESULT_CANCELED, resultIntent);
-                            SharedPreferences.Editor edit = pref.edit();
-                            edit.putString("Code", authCode);
-                            edit.commit();
-                            auth_dialog.dismiss();
-
-                            try {
-                                redditRestClient.getTokenForAuthCode(MainActivity.this);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        } else if (url.contains("error=access_denied")) {
-                            Log.i("", "ACCESS_DENIED_HERE");
-                            resultIntent.putExtra("code", authCode);
-                            authComplete = true;
-                            setResult(Activity.RESULT_CANCELED, resultIntent);
-
-                            auth_dialog.dismiss();
-                        }
-                    }
-                });
-                auth_dialog.show();
-                auth_dialog.setTitle("Authorize");
-                auth_dialog.setCancelable(true);
-
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -149,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         drawer.setDrawerListener(toggle);
         toggle.syncState();
     }
+
+
 
     @Override
     public void onBackPressed() {
@@ -193,13 +133,13 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                     redditRestClient.retrieveMySubReddits(type);
                     redditRestClient.getUsername();
                 }else{
-                    Log.d(TAG, "retrieveSubreddits");
+                    Log.d(TAG, "retrieveData");
                     redditRestClient.retrieveSubreddits(type);
                 }
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
+//
                 ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
-                       // .replace(R.id.SubRedditsNameListFragment, new SubRedditsNameListFragment()).commit();
                 ft = fm.beginTransaction();
 
                 ft.replace(R.id.SubRedditsNameListFragment, new SubRedditsNameListFragment()).commit();

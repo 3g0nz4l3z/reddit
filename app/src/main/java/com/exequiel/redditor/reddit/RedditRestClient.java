@@ -7,6 +7,8 @@ import android.util.Log;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
+import com.exequiel.redditor.interfaces.ISubscriptor;
+import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -31,17 +33,17 @@ public class RedditRestClient {
     private static String refresh_token;
     private static String expires_in;
     private static Context context;
-    private static final String CLIENT_ID = com.exequiel.redditor.BuildConfig.CLIENT_ID;
+    public static final String CLIENT_ID = com.exequiel.redditor.BuildConfig.CLIENT_ID;
     private static final String BASE_URL = "https://www.reddit.com/api/v1/";
     private static final String BASE_URL_OAUTH = "https://oauth.reddit.com";
-    private static String REDIRECT_URI = com.exequiel.redditor.BuildConfig.REDIRECT_URI;
+    public static String REDIRECT_URI = com.exequiel.redditor.BuildConfig.REDIRECT_URI;
     private static String CLIENT_SECRET = "";
     private static String GRANT_TYPE = "https://oauth.reddit.com/grants/installed_client";
     private static String GRANT_TYPE2 = "authorization_code";
     private static String ACCES_TOKEN_URL = "access_token";
-    private static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
-    private static String OAUTH_SCOPE = "read";
-    private static String STATE = UUID.randomUUID().toString();
+    public static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
+    public static String OAUTH_SCOPE = "read mysubreddits";
+    public static String STATE = UUID.randomUUID().toString();
     private static String DEVICE_ID = STATE;
     private static String USER_AGENT = "Android/Redditor 0.1";
     private AsyncHttpClient client;
@@ -51,7 +53,6 @@ public class RedditRestClient {
         context = mn;
         client = new AsyncHttpClient();
     }
-
 
 
     public void get(boolean isOAuth, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler) {
@@ -68,11 +69,11 @@ public class RedditRestClient {
         String absUrl = "";
         if (isOauth) {
             absUrl = BASE_URL_OAUTH + relativeUrl;
-        }else{
+        } else {
             absUrl = BASE_URL + relativeUrl;
         }
-        Log.d(TAG, "the url "+absUrl);
-        return  absUrl;
+        Log.d(TAG, "the url " + absUrl);
+        return absUrl;
     }
 
     /**
@@ -86,7 +87,7 @@ public class RedditRestClient {
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
         headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
-        Log.d(TAG,  "retrieveSubreddits token "+headers[1]);
+        Log.d(TAG, "retrieveSubreddits token " + headers[1]);
         get(true, url, headers, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -111,7 +112,7 @@ public class RedditRestClient {
         Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
         headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
-        Log.d(TAG,  "retrieveSubreddits token "+headers[1]);
+        Log.d(TAG, "retrieveSubreddits token " + headers[1]);
         get(true, url, headers, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -175,7 +176,7 @@ public class RedditRestClient {
         String code = pref.getString("Code", "");
 
         RequestParams requestParams = new RequestParams();
-        Log.d(TAG, "code "+code);
+        Log.d(TAG, "code " + code);
         requestParams.put("code", code);
         requestParams.put("grant_type", GRANT_TYPE2);
         requestParams.put("redirect_uri", REDIRECT_URI);
@@ -191,8 +192,8 @@ public class RedditRestClient {
                     edit.putString("token", token);
                     edit.putString("expires_in", expires_in);
                     edit.commit();
-                    Log.i(TAG, "getTokenForAuthCode "+pref.getString("token", ""));
-                   iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name), true);
+                    Log.i(TAG, "getTokenForAuthCode " + pref.getString("token", ""));
+                    iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name), true);
                 } catch (JSONException j) {
                     j.printStackTrace();
                 }
@@ -228,7 +229,7 @@ public class RedditRestClient {
                     edit.putString("token", token);
                     edit.putString("expires_in", expires_in);
                     edit.commit();
-                    Log.i(TAG, "getTokenFoInstalledClient "+pref.getString("token", ""));
+                    Log.i(TAG, "getTokenFoInstalledClient " + pref.getString("token", ""));
                     iOnAuthenticated.retrieveData(context.getResources().getString(R.string.default_reddit_name), false);
                 } catch (JSONException j) {
                     j.printStackTrace();
@@ -306,33 +307,97 @@ public class RedditRestClient {
         });
     }
 
-public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
-    final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
+    public void retrieveComments(final IProgresBarRefresher progresBarRefresher, String linkSubreddit, final String linkId) {
+        final String url = "/r/" + linkSubreddit + "/comments/" + linkId;
 
-    Header[] headers = new Header[2];
-    headers[0] = new BasicHeader("User-Agent", USER_AGENT);
-    headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
-    Log.d(TAG, url);
-    get(true, url, headers, null, new JsonHttpResponseHandler() {
-        @Override
-        public void onStart() {
-            progresBarRefresher.start_progress_bar();
-        }
-
-        @Override
-        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-            Log.d(TAG, "onSuccess");
-            try {
-                RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
-            } catch (JSONException e) {
-                e.printStackTrace();
+        Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG, url);
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                progresBarRefresher.start_progress_bar();
             }
-        }
 
-        @Override
-        public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-            Log.d(TAG, "retrieveComments "+errorResponse);
-        }
-    });
-}
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.d(TAG, "onSuccess");
+                try {
+                    RedditPersister.persistComments(context, linkId, response, progresBarRefresher);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveComments " + errorResponse);
+            }
+        });
+    }
+
+    public void subscribeSubreddit(String subRedditName, final ISubscriptor iSubscriptor) {
+        Log.d(TAG, "subscribeSubreddit");
+        final String url = "api/subscribe";
+
+        final Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+
+        RequestParams par = new RequestParams();
+        par.put("action", "sub");
+        par.put("sr_name", subRedditName);
+
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        get(true, url, headers, par, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    iSubscriptor.callSubscriveLogic();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveLinks" + errorResponse);
+            }
+        });
+
+    }
+
+    public void unSubscribeSubreddit(String subRedditName, final ISubscriptor iSubscriptor) {
+        Log.d(TAG, "unSubscribeSubreddit");
+        final String url = "api/subscribe";
+
+        final Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+
+        RequestParams par = new RequestParams();
+        par.put("action", "unsub");
+        par.put("sr_name", subRedditName);
+
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        get(true, url, headers, par, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                iSubscriptor.callSubscriveLogic();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveLinks" + errorResponse);
+            }
+        });
+
+    }
 }
