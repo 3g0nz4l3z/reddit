@@ -2,6 +2,7 @@ package com.exequiel.redditor.ui.activity;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -13,6 +14,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
@@ -33,6 +36,7 @@ import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
+import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment;
 
 import org.json.JSONException;
@@ -51,18 +55,11 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
     Toolbar toolbar;
     @BindView(R.id.textViewLinksTitle)
     TextView textViewTitle;
-    String authCode;
-    boolean authComplete = false;
+    @BindView(R.id.searchViewSubreddits)
+    SearchView searchView;
     FragmentManager fm;
     RedditRestClient redditRestClient;
     FragmentTransaction ft;
-    private static final String CLIENT_ID = BuildConfig.CLIENT_ID;
-    private static String REDIRECT_URI = BuildConfig.REDIRECT_URI;
-
-    private static String OAUTH_SCOPE = "read  mysubreddits";
-    private static String STATE = UUID.randomUUID().toString();
-    private TabLayout tabLayout;
-
 
 
     @Override
@@ -78,16 +75,31 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
             e.printStackTrace();
         }
 
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-    }
 
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                fm = getSupportFragmentManager();
+                ft = fm.beginTransaction();
+                SubRedditSearchListFragment subRedditSearchListFragment = new SubRedditSearchListFragment();
+                new RedditRestClient(MainActivity.this).searchSubredditName(query, subRedditSearchListFragment);
+                ft.replace(R.id.MainActivityFrameLayaout, subRedditSearchListFragment).commit();
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
 
 
     @Override
@@ -100,27 +112,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 
     @Override
@@ -129,16 +121,16 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
             @Override
             public void run() {
                 RedditRestClient redditRestClient = new RedditRestClient(MainActivity.this);
-                if (isUser){
+                if (isUser) {
                     redditRestClient.retrieveMySubReddits(type);
                     redditRestClient.getUsername();
-                }else{
+                } else {
                     Log.d(TAG, "retrieveData");
                     redditRestClient.retrieveSubreddits(type);
                 }
                 fm = getSupportFragmentManager();
                 ft = fm.beginTransaction();
-//
+
                 ft.replace(R.id.MainActivityFrameLayaout, new SubRedditPostListFragment()).commit();
                 ft = fm.beginTransaction();
 

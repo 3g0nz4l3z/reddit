@@ -18,14 +18,35 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-            <TextView
-                android:id="@+id/textViewLinksTitle"
-                android:text="@string/default_reddit"
 
-                android:textSize="24sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/textViewLinksTitle"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_reddit"
+                    android:textSize="24sp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentStart="true" />
+
+                <android.support.v7.widget.SearchView
+                        android:id="@+id/searchViewSubreddits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:gravity="right"
+                    android:queryHint="@string/search_hint"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true" />
+            </RelativeLayout>
+
+
         </android.support.v7.widget.Toolbar>
+
 
     </android.support.design.widget.AppBarLayout>
 

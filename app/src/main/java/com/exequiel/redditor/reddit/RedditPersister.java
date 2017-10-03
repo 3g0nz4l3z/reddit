@@ -183,4 +183,27 @@ public class RedditPersister {
 
         return;
     }
+
+    public static void persistSearch(Context context, JSONObject response, IProgresBarRefresher iProgresBarRefresher) throws JSONException {
+        Log.d(TAG, "persistSearch");
+        ArrayList<ContentValues> contentValues = new ArrayList<ContentValues>();
+        JSONArray children = response.getJSONObject("data").getJSONArray("children");
+        for (int i = 0; i < children.length(); i++) {
+            JSONObject child = children.getJSONObject(i).getJSONObject("data");
+
+
+            ContentValues cv = new ContentValues();
+                cv.put(RedditContract.Search.SEARCH_DISPLAY_NAME, child.getString(RedditContract.Search.SEARCH_DISPLAY_NAME));
+                cv.put(RedditContract.Search.SEARCH_PUBLIC_DESCRIPTION, child.getString(RedditContract.Search.SEARCH_PUBLIC_DESCRIPTION));
+                contentValues.add(cv);
+
+        }
+        if (contentValues.size() > 0) {
+            ContentValues[] contentValuesFixedArray = new ContentValues[contentValues.size()];
+            contentValues.toArray(contentValuesFixedArray);
+            context.getContentResolver().delete(RedditContract.Search.CONTENT_URI, null, null);
+            context.getContentResolver().bulkInsert(RedditContract.Search.CONTENT_URI, contentValuesFixedArray);
+        }
+        iProgresBarRefresher.refresh();
+    }
 }

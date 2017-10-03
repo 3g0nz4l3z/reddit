@@ -10,6 +10,7 @@ public class RedditContract {
     public static final String PATH_SUBREDDITS = "subreddits";
     public static final String PATH_LINKS = "links";
     public static final String PATH_COMMENTS = "comments";
+    public static final String PATH_SEARCH = "search";
 
 
     interface SubRedditsColumns{
@@ -131,6 +132,38 @@ public class RedditContract {
 
         public static long getCommentUri(Uri commentsUri) {
             return Long.parseLong(commentsUri.getPathSegments().get(1));
+        }
+
+    }
+
+    interface SearchColumns{
+        String _ID = "_id";
+        String SEARCH_DISPLAY_NAME = "display_name";
+        String SEARCH_PUBLIC_DESCRIPTION = "public_description";
+    }
+
+    public static class Search implements SearchColumns {
+        public static final Uri CONTENT_URI =
+                BASE_URI.buildUpon().appendPath(PATH_SEARCH).build();
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SEARCH;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SEARCH;
+
+
+        /** Matches: /subreddits/ */
+        public static Uri buildDirUri() {
+            return CONTENT_URI;
+        }
+
+        /** Matches: /subireddits/[_id]/ */
+        public static final Uri buildUriWithRowId (long rowId) {
+            return CONTENT_URI.buildUpon().appendPath(Long.toString(rowId)).build();
+        }
+
+
+        public static long getSearchUri(Uri searchUri) {
+            return Long.parseLong(searchUri.getPathSegments().get(1));
         }
 
     }

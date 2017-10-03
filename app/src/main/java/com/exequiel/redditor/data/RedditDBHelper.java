@@ -63,17 +63,26 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Comments.COMMENTS_SCORE + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_CREATED + " TEXT NOT NULL "
                 + ");";
+        String CREATE_TABLE_SEARCH = "CREATE TABLE " + Tables.SEARCH + " ( "
+                +RedditContract.Search._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + RedditContract.Search.SEARCH_DISPLAY_NAME + " TEXT NOT NULL, "
+                + RedditContract.Search.SEARCH_PUBLIC_DESCRIPTION + " TEXT NOT NULL "
+                + ");";
+
 
 
         db.execSQL(CREATE_TABLE_SUBREDDITS);
         db.execSQL(CREATE_TABLE_LINKS);
         db.execSQL(CREATE_TABLE_COMMENTS);
+        db.execSQL(CREATE_TABLE_SEARCH);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + Tables.SUBREDDITS);
         db.execSQL("DROP TABLE IF EXISTS " + Tables.LINKS);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.COMMENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.SEARCH);
         onCreate(db);
 
     }

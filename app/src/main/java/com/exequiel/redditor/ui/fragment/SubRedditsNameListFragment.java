@@ -75,8 +75,7 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         SubRedditPostListFragment subRedditPostListFragment = new SubRedditPostListFragment();
         subRedditPostListFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
-        TextView linksTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
-        linksTitle.setText(displayNamePrefixed);
+
     }
 
     @Override

@@ -26,6 +26,7 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.LinksLoader;
@@ -40,6 +41,7 @@ import com.exequiel.redditor.ui.activity.PostActivity;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher, ISubscriptor {
     View rootView;
@@ -208,7 +210,8 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                 /**
                  * Make a proper string value
                  */
-                getActivity().setTitle("r/" + subreddit);
+                TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
+                textViewTitle.setText("r/"+subreddit);
                 new RedditRestClient(getActivity()).retrieveLinks(SubRedditPostListFragment.this, subreddit, order);
 
             } else{
@@ -236,6 +239,7 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
+        this.refresh();
         return LinksLoader.allLinks(getActivity());
     }
 

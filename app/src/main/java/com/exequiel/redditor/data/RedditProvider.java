@@ -30,12 +30,15 @@ public class RedditProvider extends ContentProvider {
     static final int LINK_WITH_ID = 201;
     static final int COMMENT = 300;
     static final int COMMENT_WITH_ID = 301;
+    static final int SEARCH = 400;
+    static final int SEARCH_WITH_ID = 401;
 
 
     interface Tables {
         String SUBREDDITS = "subreddits";
         String LINKS = "links";
         String COMMENTS = "comments";
+        String SEARCH = "search";
     }
 
     private static UriMatcher buildUriMatcher() {
@@ -47,6 +50,8 @@ public class RedditProvider extends ContentProvider {
         matcher.addURI(authority, RedditContract.PATH_LINKS + "/#", LINK_WITH_ID); //out from 'insert'
         matcher.addURI(authority, RedditContract.PATH_COMMENTS, COMMENT); //out from 'insert'
         matcher.addURI(authority, RedditContract.PATH_COMMENTS + "/#", COMMENT_WITH_ID); //out from 'insert'
+        matcher.addURI(authority, RedditContract.PATH_SEARCH, SEARCH); //out from 'insert'
+        matcher.addURI(authority, RedditContract.PATH_SEARCH + "/#", SEARCH); //out from 'insert'
         return matcher;
     }
 
@@ -85,6 +90,10 @@ public class RedditProvider extends ContentProvider {
                 return Comments.CONTENT_TYPE;
             case COMMENT_WITH_ID:
                 return Comments.CONTENT_ITEM_TYPE;
+            case SEARCH:
+                return Search.CONTENT_TYPE;
+            case SEARCH_WITH_ID:
+                return Search.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -109,6 +118,11 @@ public class RedditProvider extends ContentProvider {
                 final long _id = db.insertOrThrow(Tables.COMMENTS, null, values);
                 getContext().getContentResolver().notifyChange(uri, null);
                 return RedditContract.Comments.buildUriWithRowId(_id);
+            }
+            case SEARCH: {
+                final long _id = db.insertOrThrow(Tables.SEARCH, null, values);
+                getContext().getContentResolver().notifyChange(uri, null);
+                return RedditContract.Search.buildUriWithRowId(_id);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -161,6 +175,13 @@ public class RedditProvider extends ContentProvider {
             case COMMENT_WITH_ID: {
                 final String _id = paths.get(1);
                 return builder.table(Tables.COMMENTS).where(RedditContract.Comments._ID + "=?", _id);
+            }
+            case SEARCH: {
+                return builder.table(Tables.SEARCH);
+            }
+            case SEARCH_WITH_ID: {
+                final String _id = paths.get(1);
+                return builder.table(Tables.SEARCH).where(RedditContract.Search._ID + "=?", _id);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

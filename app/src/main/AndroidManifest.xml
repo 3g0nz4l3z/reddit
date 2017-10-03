@@ -25,6 +25,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+                android:resource="@xml/searchable"/>
+
         </activity>
         <activity
             android:name=".ui.activity.PostActivity"

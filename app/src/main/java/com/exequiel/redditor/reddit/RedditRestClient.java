@@ -9,6 +9,7 @@ import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.exequiel.redditor.interfaces.ISubscriptor;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
+import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -339,7 +340,7 @@ public class RedditRestClient {
 
     public void subscribeSubreddit(String subRedditName, final ISubscriptor iSubscriptor) {
         Log.d(TAG, "subscribeSubreddit");
-        final String url = "api/subscribe";
+        final String url = "/api/subscribe";
 
         final Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
@@ -350,7 +351,7 @@ public class RedditRestClient {
         par.put("sr_name", subRedditName);
 
         Log.d(TAG, "token" + pref.getString("token", ""));
-        get(true, url, headers, par, new JsonHttpResponseHandler() {
+        post(true, url, headers, par, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
 
@@ -371,7 +372,7 @@ public class RedditRestClient {
 
     public void unSubscribeSubreddit(String subRedditName, final ISubscriptor iSubscriptor) {
         Log.d(TAG, "unSubscribeSubreddit");
-        final String url = "api/subscribe";
+        final String url = "/api/subscribe";
 
         final Header[] headers = new Header[2];
         headers[0] = new BasicHeader("User-Agent", USER_AGENT);
@@ -382,7 +383,7 @@ public class RedditRestClient {
         par.put("sr_name", subRedditName);
 
         Log.d(TAG, "token" + pref.getString("token", ""));
-        get(true, url, headers, par, new JsonHttpResponseHandler() {
+        post(true, url, headers, par, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
 
@@ -396,6 +397,45 @@ public class RedditRestClient {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Log.d(TAG, "retrieveLinks" + errorResponse);
+            }
+        });
+
+    }
+
+    public void searchSubredditName(String query, final IProgresBarRefresher iProgresBarRefresher) {
+        Log.d(TAG, "searchSubredditName");
+        // final String url = "/api/search_reddit_names";
+        final String url = "/subreddits/search?q="+query;
+
+        final Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+//
+//        RequestParams par = new RequestParams();
+//        par.put("exact", "false");
+//        par.put("query", query);
+//        par.put("include_over_18", "false");
+
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, "searchSubredditName "+response);
+                try {
+                    RedditPersister.persistSearch(context, response, iProgresBarRefresher);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "searchSubredditName " + errorResponse);
             }
         });
 

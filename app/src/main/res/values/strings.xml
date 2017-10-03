@@ -111,4 +111,6 @@
     </string>
     <string name="default_reddit">r/popular</string>
     <string name="default_reddit_name">popular</string>
+    <string name="app_label">Search</string>
+    <string name="search_hint">a subreddit name ...</string>
 </resources>
