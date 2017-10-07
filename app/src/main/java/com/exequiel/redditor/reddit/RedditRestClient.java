@@ -43,7 +43,7 @@ public class RedditRestClient {
     private static String GRANT_TYPE2 = "authorization_code";
     private static String ACCES_TOKEN_URL = "access_token";
     public static String OAUTH_URL = "https://www.reddit.com/api/v1/authorize.compact";
-    public static String OAUTH_SCOPE = "read mysubreddits";
+    public static String OAUTH_SCOPE = "read mysubreddits identity save subscribe submit";
     public static String STATE = UUID.randomUUID().toString();
     private static String DEVICE_ID = STATE;
     private static String USER_AGENT = "Android/Redditor 0.1";
@@ -399,7 +399,40 @@ public class RedditRestClient {
                 Log.d(TAG, "retrieveLinks" + errorResponse);
             }
         });
+    }
 
+
+
+    public void commentPost(String thing_id, String text) {
+        Log.d(TAG, "unSubscribeSubreddit");
+        final String url = "/api/comment";
+
+        final Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+
+        RequestParams par = new RequestParams();
+        par.put("api_type", "json");
+        par.put("text", text);
+        par.put("thing_id", thing_id);
+
+        Log.d(TAG, "token" + pref.getString("token", ""));
+        post(true, url, headers, par, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, "commentPost" + response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "commentPost" + errorResponse);
+            }
+        });
     }
 
     public void searchSubredditName(String query, final IProgresBarRefresher iProgresBarRefresher) {

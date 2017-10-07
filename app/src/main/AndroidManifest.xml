@@ -25,13 +25,13 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-                android:resource="@xml/searchable"/>
-
+            android:resource="@xml/searchable"/>
         </activity>
         <activity
             android:name=".ui.activity.PostActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoTitle"></activity>
+            android:theme="@style/AppTheme.NoTitle" />
+        <activity android:name=".ui.activity.CommentActivity"></activity>
     </application>
 
 </manifest>

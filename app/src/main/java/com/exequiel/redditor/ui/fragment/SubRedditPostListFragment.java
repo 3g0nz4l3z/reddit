@@ -53,7 +53,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     boolean bLogIn;
     private boolean bSubscrived;
     SharedPreferences pref;
-    Dialog auth_dialog;
     private String authCode;
 
     Intent resultIntent = new Intent();

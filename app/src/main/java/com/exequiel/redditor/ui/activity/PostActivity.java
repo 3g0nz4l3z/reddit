@@ -1,5 +1,6 @@
 package com.exequiel.redditor.ui.activity;
 
+import android.app.Dialog;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -51,6 +52,7 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     TextView textViewLinkPoints;
     @BindView(R.id.imageViewLink)
     ImageView imageViewLink;
+    Dialog commentDialog;
     Cursor cLink;
     Cursor cComments;
     String sLinkId;
