@@ -113,4 +113,6 @@
     <string name="default_reddit_name">popular</string>
     <string name="app_label">Search</string>
     <string name="search_hint">a subreddit name ...</string>
+    <string name="share_via">Share via</string>
+    <string name="type">text/plain</string>
 </resources>

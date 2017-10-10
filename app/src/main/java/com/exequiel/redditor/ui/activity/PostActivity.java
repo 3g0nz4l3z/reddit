@@ -1,6 +1,7 @@
 package com.exequiel.redditor.ui.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -38,8 +39,8 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     LinearLayout progressBarContainer;
     @BindView(R.id.linearLayaoutComments)
     LinearLayout linearLayaoutComments;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+    @BindView(R.id.fab_share)
+    FloatingActionButton fab_share;
     @BindView(R.id.textViewSubrredit)
     TextView textViewSubrredit;
     @BindView(R.id.textViewDomain)
@@ -64,6 +65,7 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     String sLinkImage;
     RedditRestClient redditRestClient;
     private String sSubredditName;
+    private String sLinkUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,11 +74,14 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
         ButterKnife.bind(this);
         redditRestClient = new RedditRestClient(PostActivity.this);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        fab_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                sharingIntent.setType(getString(R.string.type));
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TITLE, sLinkTitle);
+                sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, sLinkUrl);
+                startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_via)));
             }
         });
 
@@ -94,6 +99,7 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                         sLinkComments = cLink.getString(LinksLoader.Query.LINK_NUM_COMMENTS);
                         sLinkPoints = cLink.getString(LinksLoader.Query.LINK_SCORE);
                         sLinkImage = cLink.getString(LinksLoader.Query.LINK_IMAGE);
+                        sLinkUrl = cLink.getString(LinksLoader.Query.LINK_URL);
                     } while (cLink.moveToNext());
                 }
                 Log.d(TAG, sSubreddit + " " + sDomain + " " + sLinkTitle + " " + sLinkComments + " " + sLinkPoints + " " + sLinkImage);
