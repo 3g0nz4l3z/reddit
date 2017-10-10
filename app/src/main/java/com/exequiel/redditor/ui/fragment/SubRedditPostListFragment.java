@@ -25,7 +25,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.exequiel.redditor.R;
@@ -41,7 +40,6 @@ import com.exequiel.redditor.ui.activity.PostActivity;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 
 import org.json.JSONException;
-import org.w3c.dom.Text;
 
 public class SubRedditPostListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, IProgresBarRefresher, ISubscriptor {
     View rootView;
@@ -54,6 +52,7 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     private boolean bSubscrived;
     SharedPreferences pref;
     private String authCode;
+    Dialog auth_dialog;
 
     Intent resultIntent = new Intent();
     private boolean authComplete;

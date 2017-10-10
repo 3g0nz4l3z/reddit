@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements IOnAuthenticated 
                 SubRedditSearchListFragment subRedditSearchListFragment = new SubRedditSearchListFragment();
                 new RedditRestClient(MainActivity.this).searchSubredditName(query, subRedditSearchListFragment);
                 ft.replace(R.id.MainActivityFrameLayaout, subRedditSearchListFragment).commit();
-
+                searchView.onActionViewCollapsed();
                 return false;
             }
 
