@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,17 +16,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.CommentsLoader;
 import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.exequiel.redditor.reddit.RedditRestClient;
-import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -53,6 +56,8 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     TextView textViewLinkPoints;
     @BindView(R.id.imageViewLink)
     ImageView imageViewLink;
+    @BindView(R.id.photo_container)
+    FrameLayout photoContainer;
     Dialog commentDialog;
     Cursor cLink;
     Cursor cComments;
@@ -110,14 +115,10 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                 textViewLinkPoints.setText(sLinkPoints);
                 redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
                 try {
-                    if (!sLinkImage.equals(null)) {
-                        Log.d(TAG, sLinkImage);
-                        Picasso.with(PostActivity.this).load(sLinkImage).into(imageViewLink);
-                    } else {
-                        imageViewLink.setVisibility(View.INVISIBLE);
-                    }
+
+                            Glide.with(PostActivity.this).load(sLinkImage).into(imageViewLink);
                 } catch (Exception e) {
-                    imageViewLink.setVisibility(View.INVISIBLE);
+                    photoContainer.setVisibility(View.INVISIBLE);
                 }
             }
 

@@ -128,8 +128,8 @@
 
             <ImageView
                 android:id="@+id/imageViewIconPreview"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
                 app:srcCompat="@mipmap/ic_reddit_icon" />
         </LinearLayout>
     </LinearLayout>

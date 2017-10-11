@@ -10,10 +10,9 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.LinksLoader;
-import com.squareup.picasso.Picasso;
-
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +61,7 @@ public class SubredditPostCursorAdapter extends CursorAdapter {
 
             if (!simageViewIconPreview.isEmpty() || !simageViewIconPreview.equals("self")) {
                 Log.d(TAG, simageViewIconPreview);
-                Picasso.with(context).load(simageViewIconPreview).into(viewHolder.imageViewIconPreview);
+                Glide.with(context).load(simageViewIconPreview).into(viewHolder.imageViewIconPreview);
             }
         }catch(Exception e){
 

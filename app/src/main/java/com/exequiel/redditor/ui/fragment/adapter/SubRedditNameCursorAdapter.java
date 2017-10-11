@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.ui.RoundedImageView;
-import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,7 +49,7 @@ public class SubRedditNameCursorAdapter extends CursorAdapter {
         String icon_image = cursor.getString(SubRedditLoader.Query.ICON_IMG);
         if (!icon_image.isEmpty()) {
             Log.d(TAG, icon_image);
-            Picasso.with(context).load(icon_image).into(viewHolder.iconImage);
+            Glide.with(context).load(icon_image).into(viewHolder.iconImage);
         }
     }
 
