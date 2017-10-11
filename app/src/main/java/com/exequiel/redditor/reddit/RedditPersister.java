@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
+import com.exequiel.redditor.interfaces.ISubscriptor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +65,13 @@ public class RedditPersister {
             context.getContentResolver().delete(RedditContract.SubReddits.CONTENT_URI, null, null);
             context.getContentResolver().bulkInsert(RedditContract.SubReddits.CONTENT_URI, contentValuesFixedArray);
         }
+
+    }
+
+    public static void persistSubReddits(Context context, String order, JSONObject response, ISubscriptor iSubscriptor) throws JSONException {
+        persistSubReddits(context, order, response);
+        iSubscriptor.logInFabColorLogic();
+
     }
 
     public static void persistLinks(Context context, String order, JSONObject response, IProgresBarRefresher progresBarRefresher) throws JSONException {

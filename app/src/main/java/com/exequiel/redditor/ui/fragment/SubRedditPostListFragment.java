@@ -74,7 +74,7 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
 
     }
 
-    private void logInFabColorLogic() {
+    public void logInFabColorLogic() {
 
         pref = getActivity().getSharedPreferences("AppPref", getActivity().MODE_PRIVATE);
         bLogIn = pref.getBoolean("logIn", false);
@@ -96,7 +96,8 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
 
     private boolean isSubscrived() {
         Cursor cResult = getActivity().getContentResolver().query(RedditContract.SubReddits.CONTENT_URI, SubRedditLoader.Query.PROJECTION, RedditContract.SubReddits.DISPLAY_NAME+ " = \""+ subreddit +"\"", null, null);
-        Log.d(TAG, "isSubscrived " + cResult.getCount());
+        Log.d(TAG, "isSubscrived " + (cResult.getCount() > 0));
+
         return cResult.getCount() > 0;
     }
 
@@ -194,7 +195,7 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                     public void onClick(View view) {
                         if(bLogIn){
                             bSubscrived = isSubscrived();
-                            if (bSubscrived){
+                            if (!bSubscrived){
                                 new RedditRestClient(getActivity()).subscribeSubreddit(subreddit, SubRedditPostListFragment.this);
                             }else{
                                 new RedditRestClient(getActivity()).unSubscribeSubreddit(subreddit, SubRedditPostListFragment.this);
@@ -346,6 +347,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
 
     @Override
     public void callSubscriveLogic() {
-        logInFabColorLogic();
+        new RedditRestClient(getActivity()).retrieveMySubReddits("poular", SubRedditPostListFragment.this);
     }
 }

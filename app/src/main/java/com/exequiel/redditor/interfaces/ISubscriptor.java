@@ -6,4 +6,5 @@ package com.exequiel.redditor.interfaces;
 
 public interface ISubscriptor {
     void callSubscriveLogic();
+    void logInFabColorLogic();
 }

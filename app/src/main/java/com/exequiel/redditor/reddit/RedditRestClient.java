@@ -131,6 +131,30 @@ public class RedditRestClient {
         });
     }
 
+    public void retrieveMySubReddits(final String order, final ISubscriptor iSubscriptor) {
+        String url = "/subreddits/mine/subscriber";
+        Log.d(TAG, url);
+        Header[] headers = new Header[2];
+        headers[0] = new BasicHeader("User-Agent", USER_AGENT);
+        headers[1] = new BasicHeader("Authorization", "bearer " + pref.getString("token", ""));
+        Log.d(TAG, "retrieveSubreddits token " + headers[1]);
+        get(true, url, headers, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    RedditPersister.persistSubReddits(context, order, response, iSubscriptor);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d(TAG, "retrieveSubreddits error" + errorResponse);
+            }
+        });
+    }
+
     /**
      * Retrieve links for a subreddit in an order than can be controversial, hot, new, random, top
      *
@@ -359,12 +383,13 @@ public class RedditRestClient {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, "subscribe onSucces" + response);
                     iSubscriptor.callSubscriveLogic();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d(TAG, "retrieveLinks" + errorResponse);
+                Log.d(TAG, "subscribe onFailure" + errorResponse);
             }
         });
 
@@ -391,12 +416,13 @@ public class RedditRestClient {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d(TAG, "unsubscribe onSucces" + response);
                 iSubscriptor.callSubscriveLogic();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.d(TAG, "retrieveLinks" + errorResponse);
+                Log.d(TAG, "unsubscribe onFailure" + errorResponse);
             }
         });
     }
