@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +40,8 @@ import butterknife.ButterKnife;
 public class PostActivity extends AppCompatActivity implements IProgresBarRefresher {
 
     private static final String TAG = "PostActivity";
+    private static final String YOUTUBE = "youtube.com";
+    private static final String YOUTU_BE = "youtu.be";
     @BindView(R.id.progressBarContainer)
     LinearLayout progressBarContainer;
     @BindView(R.id.linearLayaoutComments)
@@ -58,6 +62,8 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     ImageView imageViewLink;
     @BindView(R.id.photo_container)
     FrameLayout photoContainer;
+    @BindView(R.id.imageButtonPlayMedia)
+    ImageButton playMedia;
     Dialog commentDialog;
     Cursor cLink;
     Cursor cComments;
@@ -71,6 +77,8 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
     RedditRestClient redditRestClient;
     private String sSubredditName;
     private String sLinkUrl;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +97,9 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                 startActivity(Intent.createChooser(sharingIntent, getString(R.string.share_via)));
             }
         });
+
+
+
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -114,6 +125,20 @@ public class PostActivity extends AppCompatActivity implements IProgresBarRefres
                 textViewLinkComments.setText(sLinkComments);
                 textViewLinkPoints.setText(sLinkPoints);
                 redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
+
+                if (sLinkUrl.contains(YOUTU_BE) || sLinkUrl.contains(YOUTUBE)){
+                    playMedia.setVisibility(View.VISIBLE);
+                }
+
+
+                playMedia.setOnClickListener(new View.OnClickListener(){
+
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(sLinkUrl)));
+                    }
+                });
+
                 try {
 
                             Glide.with(PostActivity.this).load(sLinkImage).into(imageViewLink);

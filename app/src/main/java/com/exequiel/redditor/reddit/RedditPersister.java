@@ -98,6 +98,7 @@ public class RedditPersister {
             cv.put(RedditContract.Links.LINK_CREATED, child.getString(RedditContract.Links.LINK_CREATED));
             cv.put(RedditContract.Links.LINK_IS_VIDEO, child.getString(RedditContract.Links.LINK_IS_VIDEO));
             cv.put(RedditContract.Links.LINK_NUM_COMMENTS, child.getString(RedditContract.Links.LINK_NUM_COMMENTS));
+            Log.d(TAG,"Link is video "+child.getString(RedditContract.Links.LINK_IS_VIDEO));
             try {
                 JSONArray jAImages = child.getJSONObject("preview").getJSONArray("images");
                 JSONObject jOImage = jAImages.getJSONObject(0).getJSONObject("source");

@@ -25,7 +25,7 @@
 
             app:titleEnabled="false">
 
-            <LinearLayout
+            <android.support.design.widget.CoordinatorLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="bottom"
@@ -34,7 +34,7 @@
                 <FrameLayout
                     android:id="@+id/photo_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/photo_placeholder">
 
                     <ImageView
@@ -42,10 +42,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/detail_card_top_margin"
                         android:scaleType="centerCrop" />
+                    <ImageButton
+                        android:id="@+id/imageButtonPlayMedia"
+                        android:src="@drawable/ic_play_circle_outline_white_48dp"
+                        android:layout_marginBottom="8dp"
+                        android:elevation="2dp"
+                        android:layout_gravity="center"
+                        android:visibility="invisible"
+                        android:background="@android:color/transparent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
                 </FrameLayout>
 
-            </LinearLayout>
+            </android.support.design.widget.CoordinatorLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
