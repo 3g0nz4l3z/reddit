@@ -1,7 +1,9 @@
 package com.exequiel.redditor.ui.fragment;
 
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +22,7 @@ import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.ui.fragment.adapter.SubRedditNameCursorAdapter;
+import com.exequiel.redditor.ui.widget.SubredditAppWidgetProvider;
 
 /**
  * Created by egonzalez on 8/23/17.
@@ -76,6 +79,13 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         subRedditPostListFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
 
+        /**
+         * Also refresh the widget
+         */
+
+        Intent refreshIntent = new Intent(this.getActivity(), SubredditAppWidgetProvider.class);
+        refreshIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        getActivity().sendBroadcast(refreshIntent);
     }
 
     @Override
