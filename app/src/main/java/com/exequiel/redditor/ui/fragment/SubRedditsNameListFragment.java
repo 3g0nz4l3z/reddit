@@ -82,10 +82,6 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         /**
          * Also refresh the widget
          */
-
-        Intent refreshIntent = new Intent(this.getActivity(), SubredditAppWidgetProvider.class);
-        refreshIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        getActivity().sendBroadcast(refreshIntent);
     }
 
     @Override

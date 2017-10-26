@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.data.RedditContract;
 
 /**
  * Created by m4ch1n3 on 25/10/2017.
@@ -17,7 +18,7 @@ import com.exequiel.redditor.R;
 
 public class SubredditAppWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "SubredditWidgetProvider";
-
+    public static final String POST_ACTION = "postAction";
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.d(TAG, "onUpdate");
@@ -45,6 +46,7 @@ public class SubredditAppWidgetProvider extends AppWidgetProvider {
                     AppWidgetManager.INVALID_APPWIDGET_ID);
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.subreddit_widget);
+
             Intent swsIntent = new Intent(context, SubredditWidgetService.class);
             swsIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             swsIntent.setData(Uri.parse(swsIntent.toUri(Intent.URI_INTENT_SCHEME)));

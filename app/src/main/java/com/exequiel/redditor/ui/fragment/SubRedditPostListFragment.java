@@ -2,6 +2,7 @@ package com.exequiel.redditor.ui.fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import com.exequiel.redditor.reddit.RedditRestClient;
 import com.exequiel.redditor.ui.activity.MainActivity;
 import com.exequiel.redditor.ui.activity.PostActivity;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
+import com.exequiel.redditor.ui.widget.SubredditAppWidgetProvider;
 
 import org.json.JSONException;
 
@@ -264,6 +266,13 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                 Log.d(TAG, "refresh()");
                     subredditPostCursorAdapter.notifyDataSetChanged();
                     progressBarContainer.setVisibility(View.GONE);
+
+
+
+
+                Intent refreshIntent = new Intent(getContext(), SubredditAppWidgetProvider.class);
+                refreshIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                getActivity().sendBroadcast(refreshIntent);
             }
         });
         }catch(Exception e){
@@ -333,7 +342,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             } while (c.moveToNext());
         }
 
-       ;
         Intent intent = new Intent(getActivity(), PostActivity.class);
         intent.putExtra(RedditContract.Links._ID, linkId);
         intent.putExtra(RedditContract.Links.LINK_ID, linkLinkId);
