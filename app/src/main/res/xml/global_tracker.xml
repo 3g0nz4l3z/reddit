@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId" translatable="false">com.exequiel.redditor.BuildConfig.REDIRECT_URI</string>
+</resources>

@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.analytics.AnalyticsApplication;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.interfaces.*;
@@ -39,6 +40,7 @@ import com.exequiel.redditor.service.OnCloseAppService;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment;
+import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONException;
 
@@ -60,6 +62,7 @@ public class MainActivity extends OnAppCloseActivity implements IOnAuthenticated
     FragmentManager fm;
     RedditRestClient redditRestClient;
     FragmentTransaction ft;
+
 
 
     @Override

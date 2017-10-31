@@ -18,11 +18,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.exequiel.redditor.R;
+import com.exequiel.redditor.analytics.AnalyticsApplication;
 import com.exequiel.redditor.data.LinksLoader;
 import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.ui.fragment.adapter.SubRedditNameCursorAdapter;
 import com.exequiel.redditor.ui.widget.SubredditAppWidgetProvider;
+import com.google.android.gms.analytics.Tracker;
 
 /**
  * Created by egonzalez on 8/23/17.
@@ -32,6 +34,7 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
     View rootView;
     private static final String TAG = SubRedditsNameListFragment.class.getCanonicalName();
     SubRedditNameCursorAdapter subRedditNameCursorAdapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

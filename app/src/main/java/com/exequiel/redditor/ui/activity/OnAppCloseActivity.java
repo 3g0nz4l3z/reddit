@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,7 +32,8 @@ public class OnAppCloseActivity extends AppCompatActivity {
         Intent intent = new Intent(this, OnCloseAppService.class);
         startService(intent);
     }
-    
+
+
     @Override
     protected void onStop() {
         super.onStop();
