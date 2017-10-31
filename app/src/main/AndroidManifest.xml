@@ -21,6 +21,7 @@
         </receiver>
         <service android:name=".ui.widget.SubredditWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service android:name=".service.OnCloseAppService" android:stopWithTask="false"/>
         <provider
             android:name=".data.RedditProvider"
             android:authorities="com.exequiel.redditor"

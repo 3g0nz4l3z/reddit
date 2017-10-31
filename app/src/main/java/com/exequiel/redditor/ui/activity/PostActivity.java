@@ -37,7 +37,7 @@ import org.w3c.dom.Text;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PostActivity extends AppCompatActivity implements IProgresBarRefresher {
+public class PostActivity extends OnAppCloseActivity implements IProgresBarRefresher {
 
     private static final String TAG = "PostActivity";
     private static final String YOUTUBE = "youtube.com";

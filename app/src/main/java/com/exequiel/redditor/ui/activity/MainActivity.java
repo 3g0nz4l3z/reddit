@@ -35,13 +35,13 @@ import com.exequiel.redditor.data.RedditContract;
 import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
+import com.exequiel.redditor.service.OnCloseAppService;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment;
 
 import org.json.JSONException;
 
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,7 +49,7 @@ import butterknife.ButterKnife;
 /**
  * Based on https://github.com/pratik98/Reddit-OAuth for the login
  */
-public class MainActivity extends AppCompatActivity implements IOnAuthenticated {
+public class MainActivity extends OnAppCloseActivity implements IOnAuthenticated {
     private static final String TAG = MainActivity.class.getCanonicalName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
