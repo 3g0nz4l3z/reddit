@@ -41,7 +41,9 @@ import com.exequiel.redditor.ui.activity.MainActivity;
 import com.exequiel.redditor.ui.activity.PostActivity;
 import com.exequiel.redditor.ui.fragment.adapter.SubredditPostCursorAdapter;
 import com.exequiel.redditor.ui.widget.SubredditAppWidgetProvider;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Logger;
 import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONException;
@@ -67,7 +69,8 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     private Tracker mTracker;
 
     private void initGAnalytics() {
-
+        GoogleAnalytics.getInstance(getActivity()).getLogger()
+                .setLogLevel(Logger.LogLevel.VERBOSE);
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
     }
@@ -198,8 +201,8 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
+        initGAnalytics();
         if (rootView == null) {
-            initGAnalytics();
             Log.d(TAG, "onCreateViewNotNull");
             rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
             fSubReddit = (CoordinatorLayout) rootView.findViewById(R.id.fSubReddits);
