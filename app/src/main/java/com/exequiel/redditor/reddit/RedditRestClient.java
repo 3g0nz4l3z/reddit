@@ -8,8 +8,6 @@ import com.exequiel.redditor.R;
 import com.exequiel.redditor.interfaces.IOnAuthenticated;
 import com.exequiel.redditor.interfaces.IProgresBarRefresher;
 import com.exequiel.redditor.interfaces.ISubscriptor;
-import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
-import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;

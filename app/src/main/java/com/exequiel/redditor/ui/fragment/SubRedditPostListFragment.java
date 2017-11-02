@@ -69,8 +69,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     private Tracker mTracker;
 
     private void initGAnalytics() {
-        GoogleAnalytics.getInstance(getActivity()).getLogger()
-                .setLogLevel(Logger.LogLevel.VERBOSE);
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
     }
@@ -203,7 +201,6 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
         setRetainInstance(true);
         initGAnalytics();
         if (rootView == null) {
-            Log.d(TAG, "onCreateViewNotNull");
             rootView = inflater.inflate(R.layout.fragment_subreddit, container, false);
             fSubReddit = (CoordinatorLayout) rootView.findViewById(R.id.fSubReddits);
             fab = (FloatingActionButton) rootView.findViewById(R.id.fab);

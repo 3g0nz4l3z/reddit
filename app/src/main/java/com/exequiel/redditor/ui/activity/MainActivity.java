@@ -1,46 +1,22 @@
 package com.exequiel.redditor.ui.activity;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.SearchManager;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
 
-import com.exequiel.redditor.BuildConfig;
 import com.exequiel.redditor.R;
-import com.exequiel.redditor.analytics.AnalyticsApplication;
-import com.exequiel.redditor.data.RedditContract;
-import com.exequiel.redditor.data.SubRedditLoader;
 import com.exequiel.redditor.interfaces.*;
 import com.exequiel.redditor.reddit.RedditRestClient;
-import com.exequiel.redditor.service.OnCloseAppService;
 import com.exequiel.redditor.ui.fragment.SubRedditPostListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditSearchListFragment;
 import com.exequiel.redditor.ui.fragment.SubRedditsNameListFragment;
-import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONException;
 

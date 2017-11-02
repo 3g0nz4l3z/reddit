@@ -16,11 +16,23 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+    }
+
+    productFlavors {
+        free {
+            applicationId "com.exequiel.redditor.free"
+        }
+
+        main {
+            applicationId "com.exequiel.redditor.main"
+        }
     }
     buildTypes.each {
         it.buildConfigField 'String', 'CLIENT_ID', clientId
         it.buildConfigField 'String', 'REDIRECT_URI', redirectUri
         it.buildConfigField 'String', 'GA_TRACKER_ID', gATrackingId
+        it.buildConfigField 'String', 'YOUR_ADMOB_APP_ID', addMobAppId
     }
 }
 
@@ -46,5 +58,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:+'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:+'
-    compile 'com.google.android.gms:play-services-analytics:9.2.0'
+    compile 'com.google.android.gms:play-services-analytics:+'
+    freeCompile 'com.google.android.gms:play-services-ads:+'
 }
