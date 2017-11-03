@@ -39,6 +39,11 @@ public class RedditPersister {
 
 
             ContentValues cv = new ContentValues();
+            boolean over_18 = false;
+            if (child.has("over_18")){
+                over_18 = child.getBoolean("over_18");
+            }
+
             String subredditId = child.getString(RedditContract.SubReddits.SUBREDDIT_ID);
             String subredditName = child.getString(RedditContract.SubReddits.DISPLAY_NAME);
             cv.put(RedditContract.SubReddits.SUBREDDIT_ID, subredditId);
@@ -48,7 +53,9 @@ public class RedditPersister {
             cv.put(RedditContract.SubReddits.TITLE, child.getString(RedditContract.SubReddits.TITLE));
             cv.put(RedditContract.SubReddits.ICON_IMG, child.getString(RedditContract.SubReddits.ICON_IMG));
             cv.put(RedditContract.SubReddits.OVER18, child.getString(RedditContract.SubReddits.OVER18));
-            contentValues.add(cv);
+            if (!over_18){
+                contentValues.add(cv);
+            }
 
             if (i == 0) {
                 pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
@@ -83,6 +90,10 @@ public class RedditPersister {
 
 
             ContentValues cv = new ContentValues();
+            boolean over_18 = false;
+            if (child.has("over_18")){
+                over_18 = child.getBoolean("over_18");
+            }
             cv.put(RedditContract.Links.LINK_ORDER, order);
             cv.put(RedditContract.Links.LINK_ID, child.getString(RedditContract.Links.LINK_ID));
             cv.put(RedditContract.Links.LINK_DOMAIN, child.getString(RedditContract.Links.LINK_DOMAIN));
@@ -95,7 +106,7 @@ public class RedditPersister {
             cv.put(RedditContract.Links.LINK_THUMBNAIL, child.getString(RedditContract.Links.LINK_THUMBNAIL));
             cv.put(RedditContract.Links.LINK_PERMALINK, child.getString(RedditContract.Links.LINK_PERMALINK));
             cv.put(RedditContract.Links.LINK_URL, child.getString(RedditContract.Links.LINK_URL));
-            cv.put(RedditContract.Links.LINK_CREATED, child.getString(RedditContract.Links.LINK_CREATED));
+            cv.put(RedditContract.Links.LINK_CREATED, child.getInt(RedditContract.Links.LINK_CREATED));
             cv.put(RedditContract.Links.LINK_IS_VIDEO, child.getString(RedditContract.Links.LINK_IS_VIDEO));
             cv.put(RedditContract.Links.LINK_NUM_COMMENTS, child.getString(RedditContract.Links.LINK_NUM_COMMENTS));
             Log.d(TAG,"Link is video "+child.getString(RedditContract.Links.LINK_IS_VIDEO));
@@ -122,8 +133,10 @@ public class RedditPersister {
             }catch (Exception e){
 
             }
-//            cv.put(RedditContract.Links.LINK_OVER18, child.getString(RedditContract.Links.LINK_OVER18));
-            contentValues.add(cv);
+
+            if (!over_18){
+                contentValues.add(cv);
+            }
 
         }
         if (contentValues.size() > 0) {
@@ -172,6 +185,10 @@ public class RedditPersister {
             for (int i = 0; i < children.length(); i++) {
                 JSONObject child = children.getJSONObject(i).getJSONObject("data");
                 ContentValues cv = new ContentValues();
+                boolean over_18 = false;
+                if (child.has("over_18")){
+                    over_18 = child.getBoolean("over_18");
+                }
                 cv.put(RedditContract.Comments.COMMENTS_PARENT_ID, parentId);
                 cv.put(RedditContract.Comments.COMMENTS_ID,  child.getString(RedditContract.Comments.COMMENTS_ID));
                 cv.put(RedditContract.Comments.COMMENTS_LINK_ID,  child.getString(RedditContract.Comments.COMMENTS_LINK_ID));
@@ -179,8 +196,10 @@ public class RedditPersister {
                 cv.put(RedditContract.Comments.COMMENTS_SUBREDDIT_ID,  child.getString(RedditContract.Comments.COMMENTS_SUBREDDIT_ID));
                 cv.put(RedditContract.Comments.COMMENTS_SCORE,  child.getString(RedditContract.Comments.COMMENTS_SCORE));
                 cv.put(RedditContract.Comments.COMMENTS_BODY, child.getString( RedditContract.Comments.COMMENTS_BODY));
-                cv.put(RedditContract.Comments.COMMENTS_CREATED,  child.getString(RedditContract.Comments.COMMENTS_CREATED));
-                contentValues.add(cv);
+                cv.put(RedditContract.Comments.COMMENTS_CREATED,  child.getInt(RedditContract.Comments.COMMENTS_CREATED));
+                if (!over_18){
+                    contentValues.add(cv);
+                }
                 if (child.has("replies")){
                     Log.d(TAG, "replies");
                     try {

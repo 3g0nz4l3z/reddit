@@ -46,7 +46,7 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Links.LINK_THUMBNAIL + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_PERMALINK + " TEXT NOT NULL, "
                 + RedditContract.Links.LINK_URL + " TEXT NOT NULL, "
-                + RedditContract.Links.LINK_CREATED + " TEXT NOT NULL, "
+                + RedditContract.Links.LINK_CREATED + " INT NOT NULL, "
                 + RedditContract.Links.LINK_IS_VIDEO + " TEXT NOT NULL,"
                 + RedditContract.Links.LINK_NUM_COMMENTS + " TEXT NOT NULL,"
                 + RedditContract.Links.LINK_IMAGE + " TEXT"
@@ -61,7 +61,7 @@ public class RedditDBHelper extends SQLiteOpenHelper {
                 + RedditContract.Comments.COMMENTS_AUTHOR + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_BODY + " TEXT NOT NULL, "
                 + RedditContract.Comments.COMMENTS_SCORE + " TEXT NOT NULL, "
-                + RedditContract.Comments.COMMENTS_CREATED + " TEXT NOT NULL "
+                + RedditContract.Comments.COMMENTS_CREATED + " INT NOT NULL "
                 + ");";
         String CREATE_TABLE_SEARCH = "CREATE TABLE " + Tables.SEARCH + " ( "
                 +RedditContract.Search._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "

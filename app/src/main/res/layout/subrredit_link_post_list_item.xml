@@ -81,6 +81,12 @@
                     android:orientation="horizontal"
                     android:padding="8dp">
 
+                    <TextView
+                        android:id="@+id/textViewLinkComments"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/link_coments" />
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -90,15 +96,10 @@
                         <ImageView
                             android:id="@+id/imageView4"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             app:srcCompat="@drawable/ic_chat_bubble_gray_18px" />
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/textViewLinkComments"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/link_coments" />
                 </LinearLayout>
 
                 <LinearLayout

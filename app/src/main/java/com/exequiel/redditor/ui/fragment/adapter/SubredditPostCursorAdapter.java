@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.exequiel.redditor.R;
 import com.exequiel.redditor.data.LinksLoader;
+import com.exequiel.redditor.util.DateUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,7 +51,7 @@ public class SubredditPostCursorAdapter extends CursorAdapter {
         String stextViewLinkTitle = cursor.getString(LinksLoader.Query.LINK_TITLE);
         String stextViewLinkPoints = cursor.getString(LinksLoader.Query.LINK_SCORE);
         String stextViewLinkComments = cursor.getString(LinksLoader.Query.LINK_NUM_COMMENTS);
-        String stextViewTime = cursor.getString(LinksLoader.Query.LINK_CREATED);
+        String stextViewTime = DateUtil.getInstance().getTimeElapsed(context, cursor.getLong(LinksLoader.Query.LINK_CREATED));
         String simageViewIconPreview = cursor.getString(LinksLoader.Query.LINK_THUMBNAIL);
         viewHolder.textViewLinkTitle.setText(stextViewLinkTitle);
         viewHolder.textViewLinkPoints.setText(stextViewLinkPoints);
