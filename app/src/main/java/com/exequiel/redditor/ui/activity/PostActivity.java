@@ -66,19 +66,48 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
     ImageButton playMedia;
     Dialog commentDialog;
     Cursor cLink;
-    Cursor cComments;
-    String sLinkId;
-    String sSubreddit;
-    String sDomain;
-    String sLinkTitle;
-    String sLinkComments;
-    String sLinkPoints;
-    String sLinkImage;
+    static Cursor cComments;
+    static String sLinkId;
+    static String sSubreddit;
+    static String sDomain;
+    static String sLinkTitle;
+    static String sLinkComments;
+    static String sLinkPoints;
+    static String sLinkImage;
     RedditRestClient redditRestClient;
-    private String sSubredditName;
-    private String sLinkUrl;
+    static String sSubredditName;
+    static String sLinkUrl;
 
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "savedInstance Not Null");
+        sSubreddit = savedInstanceState.getString("sSubreddit", sSubreddit);
+        sSubredditName = savedInstanceState.getString("sSubredditName", sSubredditName);
+        sDomain = savedInstanceState.getString("sDomain", sDomain);
+        sLinkTitle = savedInstanceState.getString("sLinkTitle", sLinkTitle);
+        sLinkComments = savedInstanceState.getString("sLinkComments", sLinkComments);
+        sLinkPoints = savedInstanceState.getString("sLinkPoints", sLinkPoints);
+        sLinkImage = savedInstanceState.getString("sLinkImage", sLinkImage);
+        sLinkUrl = savedInstanceState.getString("sLinkUrl", sLinkUrl);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+
+        savedInstanceState.putString("sSubreddit", sSubreddit);
+        savedInstanceState.putString("sSubredditName", sSubredditName);
+        savedInstanceState.putString("sDomain", sDomain);
+        savedInstanceState.putString("sLinkTitle", sLinkTitle);
+        savedInstanceState.putString("sLinkComments", sLinkComments);
+        savedInstanceState.putString("sLinkPoints", sLinkPoints);
+        savedInstanceState.putString("sLinkImage", sLinkImage);
+        savedInstanceState.putString("sLinkUrl", sLinkUrl);
+
+        super.onSaveInstanceState(savedInstanceState);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +128,6 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
         });
 
 
-
-
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
@@ -119,35 +146,45 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
                     } while (cLink.moveToNext());
                 }
                 Log.d(TAG, sSubreddit + " " + sDomain + " " + sLinkTitle + " " + sLinkComments + " " + sLinkPoints + " " + sLinkImage);
-                textViewSubrredit.setText(sSubreddit);
-                textViewDomain.setText(sDomain);
-                textViewLinkTitle.setText(sLinkTitle);
-                textViewLinkComments.setText(sLinkComments);
-                textViewLinkPoints.setText(sLinkPoints);
-                redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
 
-                if (sLinkUrl.contains(YOUTU_BE) || sLinkUrl.contains(YOUTUBE)){
-                    playMedia.setVisibility(View.VISIBLE);
-                }
-
-
-                playMedia.setOnClickListener(new View.OnClickListener(){
-
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(sLinkUrl)));
-                    }
-                });
-
-                try {
-
-                            Glide.with(PostActivity.this).load(sLinkImage).into(imageViewLink);
-                } catch (Exception e) {
-                    photoContainer.setVisibility(View.INVISIBLE);
-                }
             }
 
         }
+
+        Log.d(TAG, sSubreddit + "" + sDomain);
+        textViewSubrredit.setText(sSubreddit);
+        textViewDomain.setText(sDomain);
+        textViewLinkTitle.setText(sLinkTitle);
+        textViewLinkComments.setText(sLinkComments);
+        textViewLinkPoints.setText(sLinkPoints);
+        redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
+
+        try {
+            if (sLinkUrl.contains(YOUTU_BE) || sLinkUrl.contains(YOUTUBE)) {
+                playMedia.setVisibility(View.VISIBLE);
+            }
+
+
+            playMedia.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(sLinkUrl)));
+                }
+            });
+        } catch (NullPointerException e) {
+
+        }
+
+
+        try {
+
+            Glide.with(PostActivity.this).load(sLinkImage).into(imageViewLink);
+        } catch (Exception e) {
+            photoContainer.setVisibility(View.INVISIBLE);
+        }
+
+
     }
 
     @Override
@@ -195,9 +232,7 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
                 do {
 
                     View viewComment = LayoutInflater.from(PostActivity.this).inflate(R.layout.comment_item, null);
-//                    int backColor = getColorBackground(viewComment);
 
-                  //  if (viewComment.getBackground())
                     LinearLayout childComment = (LinearLayout) viewComment.findViewById(R.id.lineaLayOutChildComment);
                     TextView textViewUserName = (TextView) viewComment.findViewById(R.id.textViewUserName);
                     TextView textViewCommentScore = (TextView) viewComment.findViewById(R.id.textViewCommentScore);
@@ -206,29 +241,29 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
 
                     String parentId = cursor.getString(CommentsLoader.Query.COMMENTS_PARENT_ID);
                     String sUserName = cursor.getString(CommentsLoader.Query.COMMENTS_AUTHOR);
-                    String sCommentScore= cursor.getString(CommentsLoader.Query.COMMENTS_SCORE);
-                    String sBody= cursor.getString(CommentsLoader.Query.COMMENTS_BODY);
+                    String sCommentScore = cursor.getString(CommentsLoader.Query.COMMENTS_SCORE);
+                    String sBody = cursor.getString(CommentsLoader.Query.COMMENTS_BODY);
                     textViewUserName.setText(sUserName);
                     textViewCommentScore.setText(sCommentScore);
                     textViewBody.setText(sBody);
                     Cursor internalCursor = PostActivity.this.getContentResolver().query(RedditContract.Comments.CONTENT_URI, CommentsLoader.Query.PROJECTION, RedditContract.Comments.COMMENTS_PARENT_ID + " =\"" + parentId + "\"", null, null);
                     linearLayaoutComments.addView(viewComment);
-                    if (bChangeColor){
+                    if (bChangeColor) {
                         addCommentsView(internalCursor, childComment, false);
                         viewComment.setBackgroundResource(R.color.colorPrimaryLight);
-                    }else{
+                    } else {
                         addCommentsView(internalCursor, childComment, true);
                         viewComment.setBackgroundResource(R.color.colorWhite);
                     }
                 } while (cursor.moveToNext());
             }
 
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
 
-    private int getColorBackground(View view){
+    private int getColorBackground(View view) {
         int backgroundColor = 0;
         Drawable background = view.getBackground();
         if (background instanceof ColorDrawable)

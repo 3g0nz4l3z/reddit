@@ -64,8 +64,9 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     Intent resultIntent = new Intent();
     private boolean authComplete;
     private IOnAuthenticated mCallback;
-    private String subreddit;
-    private String order;
+    static String subreddit = "popular";
+    static String order = "hot";
+
     private Tracker mTracker;
 
     private void initGAnalytics() {
@@ -197,6 +198,15 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("subreddit", subreddit);
+        savedInstanceState.putString("order", order);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
         initGAnalytics();
@@ -209,13 +219,14 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             progressBarContainer = (LinearLayout) fSubReddit.findViewById(R.id.progressBarContainer);
             if (savedInstanceState == null) {
                 Bundle subRedditsBundle = this.getArguments();
-                subreddit = "popular";
-                order = "hot";
                 if (subRedditsBundle != null) {
                     subreddit = subRedditsBundle.getString(RedditContract.SubReddits.DISPLAY_NAME);
                     order = subRedditsBundle.getString(RedditContract.SubReddits.SUBREDDIT_ORDER);
                 }
-
+            }else if (savedInstanceState != null){
+                subreddit = savedInstanceState.getString(subreddit);
+                order = savedInstanceState.getString(order);
+            }
                 logInFabColorLogic();
 
                 fab.setOnClickListener(new View.OnClickListener() {
@@ -239,14 +250,10 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                 /**
                  * Make a proper string value
                  */
-                TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
-                textViewTitle.setText("r/" + subreddit);
                 new RedditRestClient(getActivity()).retrieveLinks(SubRedditPostListFragment.this, subreddit, order);
 
-            } else {
-
             }
-        }
+
         return rootView;
     }
 
@@ -254,10 +261,15 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Context context = getActivity();
-        /**
-         * La consulta tiene ser del subreddit actual
-         */
 
+        if (savedInstanceState!=null)
+        {
+            subreddit = savedInstanceState.getString("subreddit", subreddit);
+            order = savedInstanceState.getString("order", order);
+        }
+
+        TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
+        textViewTitle.setText("r/" + subreddit);
         Cursor c = context.getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, null, null, null);
 
         subredditPostCursorAdapter = new SubredditPostCursorAdapter(context, c);
