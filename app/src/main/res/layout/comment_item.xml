@@ -27,7 +27,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="left"
+                    android:gravity="start"
                     android:text="@string/reddit_username" />
 
                 <TextView
@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="right"
+                    android:gravity="end"
                     android:text="@string/link_points" />
             </LinearLayout>
 
@@ -68,7 +68,7 @@
                 android:id="@+id/lineaLayOutChildComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="right"
+                android:gravity="end"
                 android:orientation="vertical"></LinearLayout>
         </LinearLayout>
 

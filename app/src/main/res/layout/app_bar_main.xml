@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/colorPrimary"
-                    android:gravity="right"
+                    android:gravity="end"
                     android:queryHint="@string/search_hint"
                     android:layout_centerVertical="true"
                     android:layout_alignParentEnd="true" />
