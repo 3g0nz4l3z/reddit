@@ -79,6 +79,7 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         Bundle bundle = new Bundle();
         bundle.putString(RedditContract.SubReddits.DISPLAY_NAME, subRedditName);
         bundle.putString(RedditContract.SubReddits.SUBREDDIT_ORDER, order);
+        bundle.putString(RedditContract.SubReddits.DISPLAY_NAME_PREFIXED, displayNamePrefixed);
         SubRedditPostListFragment subRedditPostListFragment = new SubRedditPostListFragment();
         subRedditPostListFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
