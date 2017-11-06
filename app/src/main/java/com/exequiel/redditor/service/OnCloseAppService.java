@@ -8,6 +8,8 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.exequiel.redditor.util.JobUtil;
+
 import java.util.Random;
 
 
@@ -36,6 +38,7 @@ public class OnCloseAppService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        JobUtil.scheduleJobRefreshSession(getApplicationContext());
         return START_NOT_STICKY;
     }
 

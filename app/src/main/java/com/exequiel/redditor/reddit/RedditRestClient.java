@@ -232,6 +232,45 @@ public class RedditRestClient {
         });
     }
 
+    public void getTokenForAuthCode() throws JSONException {
+        client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
+        pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
+        String code = pref.getString("Code", "");
+
+        RequestParams requestParams = new RequestParams();
+        Log.d(TAG, "code " + code);
+        requestParams.put("code", code);
+        requestParams.put("grant_type", GRANT_TYPE2);
+        requestParams.put("redirect_uri", REDIRECT_URI);
+        post(false, ACCES_TOKEN_URL, null, requestParams, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d("getToken()", response.toString());
+                try {
+                    token = response.getString("access_token").toString();
+                    expires_in = response.getString("expires_in").toString();
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString("token", token);
+                    edit.putString("expires_in", expires_in);
+                    edit.commit();
+                    Log.i(TAG, "getTokenForAuthCode " + pref.getString("token", ""));
+                } catch (JSONException j) {
+                    j.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                //super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.i("statusCode", "" + statusCode);
+
+
+            }
+        });
+    }
+
+
     public void getTokenFoInstalledClient(final IOnAuthenticated iOnAuthenticated) throws JSONException {
         client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
         pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
@@ -270,6 +309,42 @@ public class RedditRestClient {
 
     }
 
+    public void getTokenFoInstalledClient() throws JSONException {
+        client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
+        pref = context.getSharedPreferences("AppPref", Context.MODE_PRIVATE);
+
+        RequestParams requestParams = new RequestParams();
+        requestParams.put("grant_type", GRANT_TYPE);
+        requestParams.put("device_id", DEVICE_ID);
+        post(false, ACCES_TOKEN_URL, null, requestParams, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                // If the response is JSONObject instead of expected JSONArray
+                Log.d("getToken()", response.toString());
+                try {
+
+                    token = response.getString("access_token").toString();
+                    expires_in = response.getString("expires_in").toString();
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString("token", token);
+                    edit.putString("expires_in", expires_in);
+                    edit.commit();
+                    Log.i(TAG, "getTokenFoInstalledClient " + pref.getString("token", ""));
+                } catch (JSONException j) {
+                    j.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                //super.onFailure(statusCode, headers, throwable, errorResponse);
+                Log.i("statusCode", "" + statusCode);
+
+
+            }
+        });
+
+    }
 
     public void revokeToken() {
         client.setBasicAuth(CLIENT_ID, CLIENT_SECRET);
