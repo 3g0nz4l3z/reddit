@@ -49,7 +49,9 @@ public class MainActivity extends OnAppCloseActivity implements IOnAuthenticated
         ButterKnife.bind(this);
         redditRestClient = new RedditRestClient(MainActivity.this);
         try {
-            redditRestClient.getTokenFoInstalledClient(MainActivity.this);
+            if(savedInstanceState == null){
+                redditRestClient.getTokenFoInstalledClient(MainActivity.this);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

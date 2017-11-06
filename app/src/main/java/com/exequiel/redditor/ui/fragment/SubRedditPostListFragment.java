@@ -308,7 +308,12 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                 public void run() {
                     Log.d(TAG, "refresh()");
                     subredditPostCursorAdapter.notifyDataSetChanged();
-                    progressBarContainer.setVisibility(View.GONE);
+                    try{
+
+                        progressBarContainer.setVisibility(View.GONE);
+                    }catch(NullPointerException e){
+
+                    }
 
 
                     Intent refreshIntent = new Intent(getContext(), SubredditAppWidgetProvider.class);
@@ -327,7 +332,11 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             @Override
             public void run() {
                 Log.d(TAG, "start_progress_bar");
+                try{
                 progressBarContainer.setVisibility(View.VISIBLE);
+            }catch(NullPointerException e){
+
+            }
             }
         });
 
@@ -339,7 +348,11 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             @Override
             public void run() {
                 Log.d(TAG, "end_progress_bar");
+                try{
                 progressBarContainer.setVisibility(View.GONE);
+                }catch(NullPointerException e){
+
+                }
             }
         });
     }
