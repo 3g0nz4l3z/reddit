@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,10 +79,13 @@ public class SubRedditsNameListFragment extends ListFragment implements LoaderMa
         Bundle bundle = new Bundle();
         bundle.putString(RedditContract.SubReddits.DISPLAY_NAME, subRedditName);
         bundle.putString(RedditContract.SubReddits.SUBREDDIT_ORDER, order);
+        bundle.putString(RedditContract.SubReddits.DISPLAY_NAME_PREFIXED, displayNamePrefixed);
         SubRedditPostListFragment subRedditPostListFragment = new SubRedditPostListFragment();
         subRedditPostListFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.MainActivityFrameLayaout, subRedditPostListFragment).commit();
 
+        DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawers();
         /**
          * Also refresh the widget
          */

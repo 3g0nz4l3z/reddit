@@ -44,7 +44,7 @@ public class SubRedditSearchListFragment extends ListFragment implements LoaderM
         listViewSearch = (LinearLayout) rootView.findViewById(R.id.ListViewSearch);
         progressBarContainer = (LinearLayout) listViewSearch.findViewById(R.id.progressBarContainer);
         TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
-        textViewTitle.setText("Search");
+        textViewTitle.setText(getString(R.string.search_title));
         return rootView;
     }
 

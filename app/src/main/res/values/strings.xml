@@ -109,10 +109,18 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
-    <string name="default_reddit">r/popular</string>
+    <string name="default_reddit">popular</string>
     <string name="default_reddit_name">popular</string>
+    <string name="default_reddit_name_prefixed">r/popular</string>
     <string name="app_label">Search</string>
     <string name="search_hint">a subreddit name ...</string>
     <string name="share_via">Share via</string>
     <string name="type">text/plain</string>
+    <string name="logInButton">Log in button</string>
+    <string name="subscriveButton">Subscrive Button</string>
+    <string name="unSubscriveButton">Unsubscrive Button</string>
+    <string name="play_media_button">Play media button</string>
+    <string name="share_link_button">Share link button</string>
+    <string name="search_title">Search</string>
+    <string name="subreddit_description">This is a description</string>
 </resources>

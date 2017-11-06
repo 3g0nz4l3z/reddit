@@ -64,9 +64,11 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     Intent resultIntent = new Intent();
     private boolean authComplete;
     private IOnAuthenticated mCallback;
-    private String subreddit;
-    private String order;
+    static String subreddit = "popular";
+    static String order = "hot";
+
     private Tracker mTracker;
+    static String prefixed_name = "r/popular";
 
     private void initGAnalytics() {
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
@@ -112,9 +114,11 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             bSubscrived = isSubscrived();
             if (bSubscrived) {
                 fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.colorAccent)));
+                fab.setContentDescription(getString(R.string.subscriveButton));
             } else {
                 fab.setImageResource(R.drawable.ic_unsubscrived);
                 fab.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getActivity(), R.color.colorWhite)));
+                fab.setContentDescription(getString(R.string.unSubscriveButton));
             }
         } else {
             fab.setImageResource(R.drawable.ic_input_white_24px);
@@ -197,6 +201,16 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     }
 
     @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("subreddit", subreddit);
+        savedInstanceState.putString("order", order);
+        savedInstanceState.putString("prefixed_name", prefixed_name);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
         initGAnalytics();
@@ -205,17 +219,16 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
             fSubReddit = (CoordinatorLayout) rootView.findViewById(R.id.fSubReddits);
             fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
-
+            fab.setContentDescription(getString(R.string.logInButton));
             progressBarContainer = (LinearLayout) fSubReddit.findViewById(R.id.progressBarContainer);
             if (savedInstanceState == null) {
                 Bundle subRedditsBundle = this.getArguments();
-                subreddit = "popular";
-                order = "hot";
                 if (subRedditsBundle != null) {
                     subreddit = subRedditsBundle.getString(RedditContract.SubReddits.DISPLAY_NAME);
+                    prefixed_name = subRedditsBundle.getString(RedditContract.SubReddits.DISPLAY_NAME_PREFIXED);
                     order = subRedditsBundle.getString(RedditContract.SubReddits.SUBREDDIT_ORDER);
                 }
-
+            }
                 logInFabColorLogic();
 
                 fab.setOnClickListener(new View.OnClickListener() {
@@ -239,14 +252,10 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
                 /**
                  * Make a proper string value
                  */
-                TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
-                textViewTitle.setText("r/" + subreddit);
                 new RedditRestClient(getActivity()).retrieveLinks(SubRedditPostListFragment.this, subreddit, order);
 
-            } else {
-
             }
-        }
+
         return rootView;
     }
 
@@ -254,10 +263,16 @@ public class SubRedditPostListFragment extends ListFragment implements LoaderMan
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Context context = getActivity();
-        /**
-         * La consulta tiene ser del subreddit actual
-         */
 
+        if (savedInstanceState!=null)
+        {
+            subreddit = savedInstanceState.getString("subreddit", subreddit);
+            order = savedInstanceState.getString("order", order);
+            prefixed_name = savedInstanceState.getString("prefixed_name", prefixed_name);
+        }
+
+        TextView textViewTitle = (TextView) getActivity().findViewById(R.id.textViewLinksTitle);
+        textViewTitle.setText(prefixed_name);
         Cursor c = context.getContentResolver().query(RedditContract.Links.CONTENT_URI, LinksLoader.Query.PROJECTION, null, null, null);
 
         subredditPostCursorAdapter = new SubredditPostCursorAdapter(context, c);
