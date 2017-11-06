@@ -10,3 +10,4 @@
 gradle.properties
 .idea/
 app/google-services.json
+keystore.properties
