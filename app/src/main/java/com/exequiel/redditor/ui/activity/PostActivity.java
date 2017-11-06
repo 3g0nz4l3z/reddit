@@ -149,6 +149,10 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
 
             }
 
+            redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
+
+        }else{
+            this.refresh();
         }
 
         Log.d(TAG, sSubreddit + "" + sDomain);
@@ -157,7 +161,6 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
         textViewLinkTitle.setText(sLinkTitle);
         textViewLinkComments.setText(sLinkComments);
         textViewLinkPoints.setText(sLinkPoints);
-        redditRestClient.retrieveComments(PostActivity.this, sSubredditName, sLinkId);
 
         try {
             if (sLinkUrl.contains(YOUTU_BE) || sLinkUrl.contains(YOUTUBE)) {
@@ -194,10 +197,10 @@ public class PostActivity extends OnAppCloseActivity implements IProgresBarRefre
             @Override
             public void run() {
                 Log.d(TAG, "refresh()");
+
                 Log.d(TAG, sLinkId);
                 cComments = PostActivity.this.getContentResolver().query(RedditContract.Comments.CONTENT_URI, CommentsLoader.Query.PROJECTION, RedditContract.Comments.COMMENTS_LINK_ID + " like \"%" + sLinkId + "\"", null, null);
                 addCommentsView(cComments, linearLayaoutComments, false);
-                // add comments here in a form
                 progressBarContainer.setVisibility(View.GONE);
             }
         });
